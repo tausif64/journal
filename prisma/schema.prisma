@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  AUTHOR
+  REVIEWER
+  EDITOR
+  ADMIN
+}
+
+enum ArticleStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  REVISION
+  ACCEPTED
+  REJECTED
+  PUBLISHED
+}
+
+enum IssueStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model User {
+  id            String    @id
+  name          String    @db.Text
+  email         String
+  emailVerified Boolean   @default(false)
+  role          Role      @default(AUTHOR)
+  image         String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+
+  // Relations
+  articles      Article[] @relation("AuthorArticles")
+  assignedEdits Article[] @relation("EditorAssignments")
+  reviews       Review[]  @relation("ReviewerReviews")
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?  @db.Text
+  userAgent String?  @db.Text
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @db.Text
+  providerId            String    @db.Text
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?   @db.Text
+  password              String?   @db.Text
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String   @db.Text
+  value      String   @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+model Journal {
+  id    String  @id @default(cuid())
+  name  String
+  issn  String  @unique
+  // Other global journal settings
+  volumes Volume[]
+
+  @@map("journal")
+}
+
+
+model Article {
+  id          String         @id @default(cuid())
+  title       String
+  abstract    String
+  fileUrl     String         // path like "/uploads/articles/12345.pdf"
+  coverImage  String?        // optional image path
+  keywords    String?        // Comma-separated keywords
+  status      ArticleStatus  @default(SUBMITTED)
+
+  author      User           @relation("AuthorArticles", fields: [authorId], references: [id])
+  authorId    String
+
+  editor      User?          @relation("EditorAssignments", fields: [editorId], references: [id])
+  editorId    String?
+
+  issue       Issue?         @relation(fields: [issueId], references: [id])
+  issueId     String?
+
+  payment     Payment?
+  reviews     Review[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  articleId   String   @unique
+  article     Article  @relation(fields: [articleId], references: [id])
+  razorpayOrderId String
+  amount      Float
+  currency    String
+  status      String   // e.g., "created", "paid", "failed"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id             String   @id @default(cuid())
+  article        Article  @relation(fields: [articleId], references: [id])
+  articleId      String
+  reviewer       User     @relation("ReviewerReviews", fields: [reviewerId], references: [id])
+  reviewerId     String
+  comments       String
+  recommendation String   
+  createdAt      DateTime @default(now())
+}
+
+model Volume {
+  id           String  @id @default(cuid())
+  volumeNumber Int     @unique
+  year         Int
+  coverImage      String?  
+  journal      Journal @relation(fields: [journalId], references: [id])
+  journalId    String
+  issues       Issue[]
+}
+
+model Issue {
+  id              String      @id @default(cuid())
+  issueNumber     Int
+  publicationDate DateTime?
+  status          IssueStatus @default(DRAFT)
+  coverImage      String?     // optional issue cover
+  articles        Article[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  volume          Volume      @relation(fields: [volumeId], references: [id])
+  volumeId        String
+  @@unique([volumeId, issueNumber])
+}
