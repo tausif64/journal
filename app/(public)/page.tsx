@@ -1,8 +1,9 @@
 import AboutContent from "@/components/about-content";
+import Banner from "@/components/banner";
 import { FAQ } from "@/components/faq";
 import Hero from "@/components/hero";
 import { PublicationTimeline } from "@/components/publication-timeline";
-import { SubmitBanner } from "@/components/submit-banner";
+// import { SubmitBanner } from "@/components/submit-banner";
 import TestimonialCarousel from "@/components/testimonial-carousel";
 import WhyPublish from "@/components/why-publish";
 
@@ -24,7 +25,8 @@ export default function Home() {
       <PublicationTimeline />
 
       {/* submit paper banner */}
-      <SubmitBanner />
+      {/* <SubmitBanner /> */}
+      <Banner />
 
       {/* Why to Publish in MACROJ*/}
       <WhyPublish />

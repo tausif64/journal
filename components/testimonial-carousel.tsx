@@ -94,12 +94,12 @@ export default function TestimonialCarousel() {
   const renderCards = () =>
     testimonials.map((t, idx) => (
       <CarouselItem key={idx} className="md:basis-1/2 lg:basis-1/4">
-        <Card className="max-w-[300px] p-4 flex flex-col items-center text-center">
+        <Card className="max-w-[300px] h-[220px] gap-3 p-4 flex flex-col items-center text-center">
           <Avatar>
             <AvatarImage src={t.imageUrl} alt={t.name} />
             <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
           </Avatar>
-          <p className="mt-2 text-gray-700">{t.quote}</p>
+          <p className="mt-2 text-gray-700 text-sm">{t.quote}</p>
           <p className="mt-2 font-semibold">{t.name}</p>
           <p className="text-sm text-gray-500">{t.role}</p>
         </Card>
