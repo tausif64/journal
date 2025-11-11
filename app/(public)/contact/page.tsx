@@ -4,6 +4,55 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Conferences & Symposia - MACROJ Research Journal",
+  description:
+    "Stay updated with the latest academic conferences and symposia organized by MACROJ and Marwari College Ranchi. Participate, network, and contribute to cutting-edge interdisciplinary research.",
+  keywords: [
+    "MACROJ",
+    "Marwari College Ranchi",
+    "Academic Conferences",
+    "Research Symposia",
+    "Scholarly Events",
+    "Interdisciplinary Research",
+    "Workshops",
+    "Conferences 2025",
+    "Academic Networking",
+  ],
+  authors: [
+    { name: "MACROJ Editorial Team", url: "https://yourdomain.com/macroj" },
+  ],
+  creator: "MACROJ Editorial Team",
+  publisher: "MACROJ Research Journal",
+  openGraph: {
+    title: "Conferences & Symposia - MACROJ Research Journal",
+    description:
+      "Join MACROJ and Marwari College Ranchi academic conferences, workshops, and symposia to advance interdisciplinary research and network with scholars.",
+    url: "https://yourdomain.com/events/conferences",
+    siteName: "MACROJ Research Journal",
+    type: "website",
+    images: [
+      {
+        url: "https://placehold.co/1200x400/FF5733/FFFFFF.png",
+        width: 1200,
+        height: 400,
+        alt: "MACROJ Conferences Banner",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Conferences & Symposia - MACROJ Research Journal",
+    description:
+      "Participate in MACROJ academic conferences and symposia at Marwari College Ranchi. Connect, collaborate, and contribute to scholarly research.",
+    images: ["https://placehold.co/1200x400/FF5733/FFFFFF.png"],
+    creator: "@MACROJ_College",
+  },
+  robots: "index, follow",
+  metadataBase: new URL("https://yourdomain.com/"),
+};
 
 export default function Contact() {
   return (
@@ -47,7 +96,7 @@ export default function Contact() {
               Let&apos;s get you to the right place
             </h3>
             <p className="text-sm">
-              Reach out to our team! 
+              Reach out to our team!
               {/* We&apos;re eager to learn more about
               how you plan to use our application. */}
             </p>

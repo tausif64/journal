@@ -3,9 +3,53 @@ import Banner from "@/components/banner";
 import { FAQ } from "@/components/faq";
 import Hero from "@/components/hero";
 import { PublicationTimeline } from "@/components/publication-timeline";
-// import { SubmitBanner } from "@/components/submit-banner";
 import TestimonialCarousel from "@/components/testimonial-carousel";
 import WhyPublish from "@/components/why-publish";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "MACROJ Research Journal - Multidisciplinary Academic Research",
+  description:
+    "Welcome to MACROJ, the peer-reviewed research journal of Marwari College Ranchi. Explore cutting-edge research across science, humanities, technology, education, and interdisciplinary studies. Access current issues, archives, and open-access publications.",
+  keywords: [
+    "MACROJ",
+    "Marwari College Ranchi",
+    "research journal",
+    "multidisciplinary research",
+    "open access",
+    "academic publications",
+    "science research",
+    "humanities research",
+    "education research",
+    "technology research",
+    "interdisciplinary research",
+  ],
+  authors: [{ name: "Marwari College Ranchi" }],
+  openGraph: {
+    title: "MACROJ Research Journal - Multidisciplinary Academic Research",
+    description:
+      "Discover the MACROJ Research Journal: peer-reviewed articles, interdisciplinary insights, and open-access scholarly research from Marwari College Ranchi.",
+    url: "https://yourdomain.com/",
+    siteName: "MACROJ Research Journal",
+    images: [
+      {
+        url: "https://placehold.co/1200x400/FF5733/FFFFFF.png",
+        width: 1200,
+        height: 400,
+        alt: "MACROJ Research Journal Banner",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MACROJ Research Journal - Multidisciplinary Academic Research",
+    description:
+      "Explore MACROJ: a peer-reviewed, open-access journal featuring research across sciences, humanities, education, and technology.",
+    images: ["https://placehold.co/1200x400/FF5733/FFFFFF.png"],
+  },
+};
 
 export default function Home() {
   return (
@@ -25,7 +69,6 @@ export default function Home() {
       <PublicationTimeline />
 
       {/* submit paper banner */}
-      {/* <SubmitBanner /> */}
       <Banner />
 
       {/* Why to Publish in MACROJ*/}

@@ -58,7 +58,7 @@ export default function AboutContent({
               </blockquote>
             )}
             <Link
-              href="/about"
+              href="/about-us"
               className={buttonVariants({
                 className: "ml-5",
               })}

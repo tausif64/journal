@@ -7,11 +7,11 @@ import {
   Users,
   Target,
   Eye,
-  FileText,
+  // FileText,
   Library,
   Archive,
   Video,
-  MessageSquare,
+  // MessageSquare,
   Calendar,
   ChevronDown,
 } from "lucide-react";
@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/sheet";
 import Image from "next/image";
 import Link from "next/link";
+import SearchBar from "./search-bar";
 
 interface MenuItem {
   title: string;
@@ -90,11 +91,10 @@ const menu: MenuItem[] = [
     url: "#",
     items: [
       {
-        title: "Articles",
-        description:
-          "Access peer-reviewed articles from diverse research disciplines.",
-        icon: <FileText className="size-5 shrink-0" />,
-        url: "/publications/articles",
+        title: "Past Issues",
+        description: "Explore previous journal volumes and special issues.",
+        icon: <Archive className="size-5 shrink-0" />,
+        url: "/publications/issues",
       },
       {
         title: "Journals",
@@ -102,41 +102,35 @@ const menu: MenuItem[] = [
         icon: <Library className="size-5 shrink-0" />,
         url: "/publications/journals",
       },
-      {
-        title: "Books",
-        description:
-          "Explore scholarly books and monographs from leading researchers.",
-        icon: <Book className="size-5 shrink-0" />,
-        url: "/publications/books",
-      },
+      // {
+      //   title: "Books",
+      //   description:
+      //     "Explore scholarly books and monographs from leading researchers.",
+      //   icon: <Book className="size-5 shrink-0" />,
+      //   url: "/publications/books",
+      // },
     ],
   },
-  {
-    title: "Archives",
-    url: "#",
-    items: [
-      {
-        title: "Past Issues",
-        description: "Explore previous journal volumes and special issues.",
-        icon: <Archive className="size-5 shrink-0" />,
-        url: "/archives/issues",
-      },
-      {
-        title: "Video Resources",
-        description:
-          "Watch recorded lectures, conferences, and research presentations.",
-        icon: <Video className="size-5 shrink-0" />,
-        url: "/archives/videos",
-      },
-      {
-        title: "Research Discussions",
-        description:
-          "Join academic conversations and debates within your field.",
-        icon: <MessageSquare className="size-5 shrink-0" />,
-        url: "/archives/discussions",
-      },
-    ],
-  },
+  // {
+  //   title: "Archives",
+  //   url: "#",
+  //   items: [
+  //     {
+  //       title: "Video Resources",
+  //       description:
+  //         "Watch recorded lectures, conferences, and research presentations.",
+  //       icon: <Video className="size-5 shrink-0" />,
+  //       url: "/archives/videos",
+  //     },
+  //     {
+  //       title: "Research Discussions",
+  //       description:
+  //         "Join academic conversations and debates within your field.",
+  //       icon: <MessageSquare className="size-5 shrink-0" />,
+  //       url: "/archives/discussions",
+  //     },
+  //   ],
+  // },
   {
     title: "Events",
     url: "#",
@@ -147,13 +141,13 @@ const menu: MenuItem[] = [
         icon: <Calendar className="size-5 shrink-0" />,
         url: "/events/conferences",
       },
-      {
-        title: "Workshops",
-        description:
-          "Hands-on training and workshops for researchers and students.",
-        icon: <Book className="size-5 shrink-0" />,
-        url: "/events/workshops",
-      },
+      // {
+      //   title: "Workshops",
+      //   description:
+      //     "Hands-on training and workshops for researchers and students.",
+      //   icon: <Book className="size-5 shrink-0" />,
+      //   url: "/events/workshops",
+      // },
       {
         title: "Webinars",
         description:
@@ -185,22 +179,26 @@ const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-md py-4">
       <div className="container mx-auto flex items-center justify-between px-3">
         {/* Logo */}
-        <Link href={logo.url} className="flex flex-col">
-          {/* <Image
+        <Link href={logo.url} className="flex flex-wrap gap-2 items-center">
+          <Image
             src={logo.src}
             className="max-h-8 dark:invert"
             width={32}
             height={32}
             alt={logo.alt}
-          /> */}
-          <span className="text-xl font-bold tracking-tighter">
-            {logo.title}
-          </span>
-          <span className="text-[12px] font-medium -mt-1">ISSN: 2249-0825</span>
+          />
+          <div className="flex flex-col">
+            <span className="text-xl font-bold tracking-tighter">
+              {logo.title}
+            </span>
+            <span className="text-[12px] font-medium -mt-1">
+              ISSN: 2249-0825
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Menu */}
-        <nav className="hidden lg:flex items-center gap-6 lg:gap-x-10 relative">
+        <nav className="hidden lg:flex items-center gap-6 lg:gap-x-6 relative">
           {menu.map((item) =>
             item.items ? (
               <div key={item.title} className="group relative">
@@ -237,13 +235,20 @@ const Navbar: React.FC<NavbarProps> = ({
               </Link>
             )
           )}
-          <Button asChild className="rounded-full">
-            <a href={"/login"}>Publish with us</a>
-          </Button>
+          <div className="relative w-fit h-8 flex gap-4">
+            <SearchBar />
+            <Button asChild className="rounded-full">
+              <a href={"/login"}>Publish with us</a>
+            </Button>
+          </div>
         </nav>
 
         {/* Mobile Menu */}
-        <div className="block lg:hidden ">
+        <div className="flex items-center gap-2 lg:hidden">
+          {/* Search Bar */}
+          <div className="relative w-fit min-w-10 h-8">
+            <SearchBar />
+          </div>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon">

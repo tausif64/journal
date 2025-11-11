@@ -1,5 +1,53 @@
 import { Member } from "@/lib/types";
 import { MemberCard } from "./_components/MemberCard";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Editorial Board & Members - MACROJ Research Journal",
+  description:
+    "Meet the editorial board, associate editors, co-editors, and reviewers of MACROJ Research Journal. Connect with experts and scholars shaping academic research.",
+  keywords: [
+    "MACROJ",
+    "Editorial Board",
+    "Editors",
+    "Reviewers",
+    "Academic Journal",
+    "Research",
+    "Scholarly Collaboration",
+    "Contributing Scholars",
+  ],
+  authors: [
+    { name: "MACROJ Editorial Team", url: "https://yourdomain.com/macroj" },
+  ],
+  creator: "MACROJ Editorial Team",
+  publisher: "MACROJ Research Journal",
+  openGraph: {
+    title: "Editorial Board & Members - MACROJ Research Journal",
+    description:
+      "Explore the editorial board, associate editors, co-editors, and reviewers contributing to MACROJ Research Journal.",
+    url: "https://yourdomain.com/members",
+    siteName: "MACROJ Research Journal",
+    type: "website",
+    images: [
+      {
+        url: "https://placehold.co/1200x400/FF5733/FFFFFF.png",
+        width: 1200,
+        height: 400,
+        alt: "MACROJ Editorial Board Banner",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Editorial Board & Members - MACROJ Research Journal",
+    description:
+      "Meet the editorial board, associate editors, co-editors, and reviewers of MACROJ Research Journal.",
+    images: ["https://placehold.co/1200x400/FF5733/FFFFFF.png"],
+    creator: "@MACROJ_College",
+  },
+  robots: "index, follow",
+  metadataBase: new URL("https://yourdomain.com/"),
+};
 
 
 const teamData: Member[] = [

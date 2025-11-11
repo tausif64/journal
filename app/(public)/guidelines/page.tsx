@@ -1,6 +1,55 @@
 import { BreadcrumbBanner } from "@/components/breadcrumb-banner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Author Guidelines - MACROJ Research Journal",
+  description:
+    "Submission policies, formatting instructions, and publication ethics for authors submitting manuscripts to MACROJ journal.",
+  keywords: [
+    "MACROJ",
+    "Author Guidelines",
+    "Submission Policies",
+    "Manuscript Formatting",
+    "Publication Ethics",
+    "Academic Research",
+    "Peer Review",
+    "Scholarly Publishing",
+    "Journal Submission",
+  ],
+  authors: [
+    { name: "MACROJ Editorial Team", url: "https://yourdomain.com/macroj" },
+  ],
+  creator: "MACROJ Editorial Team",
+  publisher: "MACROJ Research Journal",
+  openGraph: {
+    title: "Author Guidelines - MACROJ Research Journal",
+    description:
+      "Read MACROJ journal's author guidelines to ensure proper manuscript formatting, submission requirements, and ethical standards for academic publication.",
+    url: "https://yourdomain.com/guidelines",
+    siteName: "MACROJ Research Journal",
+    type: "website",
+    images: [
+      {
+        url: "https://placehold.co/1200x400/FF5733/FFFFFF.png",
+        width: 1200,
+        height: 400,
+        alt: "MACROJ Author Guidelines Banner",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Author Guidelines - MACROJ Research Journal",
+    description:
+      "Follow MACROJ's author guidelines for manuscript submission, formatting instructions, and publication ethics.",
+    images: ["https://placehold.co/1200x400/FF5733/FFFFFF.png"],
+    creator: "@MACROJ_College",
+  },
+  robots: "index, follow",
+  metadataBase: new URL("https://yourdomain.com/"),
+};
 
 export default function GuidelinesPage() {
   return (

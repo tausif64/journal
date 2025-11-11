@@ -2,10 +2,52 @@ import Image from "next/image";
 import { BreadcrumbBanner } from "@/components/breadcrumb-banner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import type { Metadata } from "next";
+import Banner from "@/components/banner";
+
+export const metadata: Metadata = {
+  title: "About the Journal | MACROJ",
+  description:
+    "Learn more about MACROJ — an interdisciplinary, peer-reviewed journal published by Marwari College Ranchi, promoting academic excellence and collaborative research.",
+  keywords: [
+    "MACROJ",
+    "Marwari College Ranchi",
+    "Academic Journal",
+    "Peer-reviewed Research",
+    "Interdisciplinary Studies",
+    "Scholarly Publishing",
+    "Research Journal",
+  ],
+  openGraph: {
+    title: "About the Journal | MACROJ",
+    description:
+      "Discover MACROJ’s mission, vision, and editorial structure — a peer-reviewed journal fostering interdisciplinary research from Marwari College Ranchi.",
+    url: "https://yourdomain.com/about-us",
+    siteName: "MACROJ",
+    images: [
+      {
+        url: "https://placehold.co/1200x400/FF5733/FFFFFF.png",
+        width: 1200,
+        height: 400,
+        alt: "About MACROJ Journal Banner",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About the Journal | MACROJ",
+    description:
+      "Learn about MACROJ — its vision, scope, and editorial board under Marwari College Ranchi.",
+    images: ["https://placehold.co/1200x400/FF5733/FFFFFF.png"],
+  },
+};
+
 
 export default function AboutPage() {
   return (
-    <main>
+    <>
       {/* Hero Banner */}
       <BreadcrumbBanner
         title="About the Journal"
@@ -72,11 +114,11 @@ export default function AboutPage() {
             </div>
             <div className="text-muted-foreground leading-relaxed text-justify">
               <p>
-                <strong>Dr. Manoj Kumar</strong> — Principal, Marwari
-                College Ranchi, extends warm wishes to the contributors and
-                readers of MACROJ. Under his leadership, the college
-                continues to promote a culture of academic excellence and
-                interdisciplinary collaboration.
+                <strong>Dr. Manoj Kumar</strong> — Principal, Marwari College
+                Ranchi, extends warm wishes to the contributors and readers of
+                MACROJ. Under his leadership, the college continues to promote a
+                culture of academic excellence and interdisciplinary
+                collaboration.
               </p>
               <p className="mt-3">
                 The journal reflects the institution’s vision of fostering a
@@ -183,6 +225,7 @@ export default function AboutPage() {
           </CardContent>
         </Card>
       </section>
-    </main>
+      <Banner />
+    </>
   );
 }
