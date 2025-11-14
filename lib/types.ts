@@ -1,3 +1,14 @@
+
+import type {
+  Article,
+  User,
+  Review,
+  Payment,
+  Volume,
+  Issue,
+  Journal,
+} from "./generated/prisma/client";
+
 export interface Member {
   id: number;
   name: string;
@@ -9,15 +20,30 @@ export interface Member {
 }
 
 
-// export interface EditorialMember {
-//   id: number; // unique identifier
-//   name: string; // full name of the member
-//   role: "Chief Editor" | "Associate Editor" | "Co-editor" | "Reviewer"; // explicit roles
-//   image: string; // profile image URL (required for display)
-//   affiliation?: string; // e.g., "Marwari College, Ranchi"
-//   email?: string; // optional contact email
-//   linkedin?: string; // optional LinkedIn profile URL
-//   twitter?: string; // optional Twitter profile URL
-//   website?: string; // optional personal or professional website
-//   bio?: string; // short biography
-// }
+/**
+ * DTOs (derived types) — these extend the raw Prisma model types with
+ * included relations where appropriate.
+ *
+ * Keep these small and expand as needed for your API responses.
+ */
+
+export type UserPublic = Pick<User, "id" | "name" | "email" | "image" | "role" | "createdAt">;
+
+export type ArticleDTO = Article & {
+  author?: UserPublic | null;
+  editor?: Pick<User, "id" | "name" | "email"> | null;
+  reviews?: Review[];
+  payment?: Payment | null;
+  issue?: Issue | null;
+};
+
+export type ReviewDTO = Review & {
+  reviewer?: Pick<User, "id" | "name">;
+};
+
+export type PaymentDTO = Payment;
+
+export type VolumeDTO = Volume & {
+  journal?: Journal;
+  issues?: Issue[];
+};
