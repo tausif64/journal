@@ -7,11 +7,9 @@ import {
   Users,
   Target,
   Eye,
-  // FileText,
   Library,
   Archive,
   Video,
-  // MessageSquare,
   Calendar,
   ChevronDown,
 } from "lucide-react";
@@ -33,6 +31,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import SearchBar from "./search-bar";
+import { authClient } from "@/lib/auth-client";
+import { UserDropdown } from "./UserDropdown";
 
 interface MenuItem {
   title: string;
@@ -175,6 +175,7 @@ const Navbar: React.FC<NavbarProps> = ({
     title: "MACROJ",
   },
 }) => {
+  const { data: session, isPending } = authClient.useSession();
   return (
     <header className="sticky top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-md py-4">
       <div className="container mx-auto flex items-center justify-between px-3">
@@ -237,9 +238,21 @@ const Navbar: React.FC<NavbarProps> = ({
           )}
           <div className="relative w-fit h-8 flex gap-4">
             <SearchBar />
-            <Button asChild className="rounded-full">
-              <a href={"/login"}>Publish with us</a>
-            </Button>
+            {isPending ? null : session ? (
+              <UserDropdown
+                email={session.user.email}
+                name={
+                  session?.user.name && session?.user.name.length > 0
+                    ? session?.user.name
+                    : session?.user.email.split("@")[0]
+                }
+                image={session?.user.image ?? ""}
+              />
+            ) : (
+              <Button asChild className="rounded-full">
+                <a href={"/login"}>Publish with us</a>
+              </Button>
+            )}
           </div>
         </nav>
 
@@ -279,9 +292,21 @@ const Navbar: React.FC<NavbarProps> = ({
                 </Accordion>
               </div>
               <div className="flex flex-col gap-2 items-center px-2">
-                <Button asChild className="rounded flex-1 w-full">
-                  <a href={"/login"}>Publish with us</a>
-                </Button>
+                {isPending ? null : session ? (
+                  <UserDropdown
+                    email={session.user.email}
+                    name={
+                      session?.user.name && session?.user.name.length > 0
+                        ? session?.user.name
+                        : session?.user.email.split("@")[0]
+                    }
+                    image={session?.user?.image ?? ""}
+                  />
+                ) : (
+                  <Button asChild className="rounded-full">
+                    <a href={"/login"}>Publish with us</a>
+                  </Button>
+                )}
               </div>
             </SheetContent>
           </Sheet>

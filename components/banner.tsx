@@ -4,38 +4,6 @@ import React from "react";
 import { Button } from "./ui/button";
 
 const Banner: React.FC = () => {
-  const styles: React.CSSProperties = {
-    width: "100%",
-    height: "300px",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "linear-gradient(60deg, #4A6572 50%, #344955 50%)",
-    position: "relative",
-    overflow: "hidden",
-    marginBottom: "40px",
-  };
-
-  const leftSection: React.CSSProperties = {
-    flex: 1,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    color: "#ffffff",
-    textAlign: "center",
-    fontSize: "2rem",
-    fontWeight: 600,
-    padding: "1rem",
-  };
-
-  const rightSection: React.CSSProperties = {
-    flex: 1,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-  };
 
   return (
     <section
@@ -57,7 +25,7 @@ const Banner: React.FC = () => {
         </div> */}
       </div>
       <div className="md:flex-1 flex justify-center items-center relative">
-        <Link href="/submit">
+        <Link href="/login">
           <Button
             size="lg"
             className="bg-white text-black hover:bg-gray-200 px-8 py-6 text-base font-semibold shadow-md"

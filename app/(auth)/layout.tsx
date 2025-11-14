@@ -1,8 +1,17 @@
 import BackButton from "@/components/back-button"
-import Link from "next/link";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 
-const AuthLayout = ({ children }: { children: ReactNode }) => {
+const AuthLayout = async ({ children }: { children: ReactNode }) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  // console.log(session);
+  if (session?.user) {
+    return redirect("/");
+  }
   return (
     <div className="relative flex min-h-svh flex-col justify-center items-center">
       <div className="absolute top-5 left-5">
