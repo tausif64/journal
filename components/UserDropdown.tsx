@@ -14,7 +14,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useSignOut } from "@/hooks/use-signout"
-import { LogOutIcon, BookOpen, ChevronDownIcon, LayoutDashboardIcon } from "lucide-react"
+import { LogOutIcon, BookOpen, ChevronDownIcon, LayoutDashboardIcon, User } from "lucide-react"
 import Link from "next/link"
 
 
@@ -33,7 +33,7 @@ export function UserDropdown({name, email, image}:iAppProps) {
           <Button variant="ghost" className="h-full p-0 hover:bg-transparent">
             <Avatar>
               <AvatarImage src={image} alt="Profile image" />
-              <AvatarFallback className="uppercase text-white bg-black">
+              <AvatarFallback className="uppercase text-white bg-black select-none">
                 {name.charAt(0)}
               </AvatarFallback>
             </Avatar>
@@ -69,6 +69,12 @@ export function UserDropdown({name, email, image}:iAppProps) {
               <Link href="/dashboard/articles">
                 <BookOpen size={16} className="opacity-60" aria-hidden="true" />
                 <span>Articles</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/profile">
+                <User size={16} className="opacity-60" aria-hidden="true" />
+                <span>Profile</span>
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>

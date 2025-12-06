@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Book,
   Menu,
@@ -31,8 +31,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import SearchBar from "./search-bar";
-import { authClient } from "@/lib/auth-client";
-import { UserDropdown } from "./UserDropdown";
+import UserArea from "./user-area";
 
 interface MenuItem {
   title: string;
@@ -167,6 +166,7 @@ const menu: MenuItem[] = [
   },
 ];
 
+
 const Navbar: React.FC<NavbarProps> = ({
   logo = {
     url: "/",
@@ -175,7 +175,6 @@ const Navbar: React.FC<NavbarProps> = ({
     title: "MACROJ",
   },
 }) => {
-  const { data: session, isPending } = authClient.useSession();
   return (
     <header className="sticky top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-md py-4">
       <div className="container mx-auto flex items-center justify-between px-3">
@@ -238,21 +237,7 @@ const Navbar: React.FC<NavbarProps> = ({
           )}
           <div className="relative w-fit h-8 flex gap-4">
             <SearchBar />
-            {isPending ? null : session ? (
-              <UserDropdown
-                email={session.user.email}
-                name={
-                  session?.user.name && session?.user.name.length > 0
-                    ? session?.user.name
-                    : session?.user.email.split("@")[0]
-                }
-                image={session?.user.image ?? ""}
-              />
-            ) : (
-              <Button asChild className="rounded-full">
-                <a href={"/login"}>Publish with us</a>
-              </Button>
-            )}
+            <UserArea />
           </div>
         </nav>
 
@@ -292,21 +277,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 </Accordion>
               </div>
               <div className="flex flex-col gap-2 items-center px-2">
-                {isPending ? null : session ? (
-                  <UserDropdown
-                    email={session.user.email}
-                    name={
-                      session?.user.name && session?.user.name.length > 0
-                        ? session?.user.name
-                        : session?.user.email.split("@")[0]
-                    }
-                    image={session?.user?.image ?? ""}
-                  />
-                ) : (
-                  <Button asChild className="rounded-full">
-                    <a href={"/login"}>Publish with us</a>
-                  </Button>
-                )}
+                <UserArea />
               </div>
             </SheetContent>
           </Sheet>
