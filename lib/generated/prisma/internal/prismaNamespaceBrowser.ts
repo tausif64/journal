@@ -54,6 +54,7 @@ export const ModelName = {
   Verification: 'Verification',
   Journal: 'Journal',
   Article: 'Article',
+  ArticleAuthor: 'ArticleAuthor',
   Payment: 'Payment',
   Review: 'Review',
   Volume: 'Volume',
@@ -82,12 +83,12 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   role: 'role',
+  gender: 'gender',
+  phone: 'phone',
   image: 'image',
+  address: 'address',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  banned: 'banned',
-  banReason: 'banReason',
-  banExpires: 'banExpires'
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -156,7 +157,6 @@ export const ArticleScalarFieldEnum = {
   coverImage: 'coverImage',
   keywords: 'keywords',
   status: 'status',
-  authorId: 'authorId',
   editorId: 'editorId',
   issueId: 'issueId',
   createdAt: 'createdAt',
@@ -164,6 +164,19 @@ export const ArticleScalarFieldEnum = {
 } as const
 
 export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
+
+
+export const ArticleAuthorScalarFieldEnum = {
+  id: 'id',
+  articleId: 'articleId',
+  authorId: 'authorId',
+  authorOrder: 'authorOrder',
+  isCorresponding: 'isCorresponding',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArticleAuthorScalarFieldEnum = (typeof ArticleAuthorScalarFieldEnum)[keyof typeof ArticleAuthorScalarFieldEnum]
 
 
 export const PaymentScalarFieldEnum = {
@@ -237,8 +250,9 @@ export const UserOrderByRelevanceFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
+  phone: 'phone',
   image: 'image',
-  banReason: 'banReason'
+  address: 'address'
 } as const
 
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
@@ -296,12 +310,20 @@ export const ArticleOrderByRelevanceFieldEnum = {
   fileUrl: 'fileUrl',
   coverImage: 'coverImage',
   keywords: 'keywords',
-  authorId: 'authorId',
   editorId: 'editorId',
   issueId: 'issueId'
 } as const
 
 export type ArticleOrderByRelevanceFieldEnum = (typeof ArticleOrderByRelevanceFieldEnum)[keyof typeof ArticleOrderByRelevanceFieldEnum]
+
+
+export const ArticleAuthorOrderByRelevanceFieldEnum = {
+  id: 'id',
+  articleId: 'articleId',
+  authorId: 'authorId'
+} as const
+
+export type ArticleAuthorOrderByRelevanceFieldEnum = (typeof ArticleAuthorOrderByRelevanceFieldEnum)[keyof typeof ArticleAuthorOrderByRelevanceFieldEnum]
 
 
 export const PaymentOrderByRelevanceFieldEnum = {

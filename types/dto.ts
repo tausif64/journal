@@ -3,6 +3,9 @@
 /**
  * Generic pagination DTO
  */
+import { Session, User } from '@/lib/generated/prisma/client';
+
+
 export type PaginationQueryDTO = {
   limit?: number;
   page?: number;
@@ -17,50 +20,111 @@ export type PaginationMetaDTO = {
 /**
  * ===== User DTOs =====
  */
+export enum Role {
+  AUTHOR = "AUTHOR",
+  REVIEWER = "REVIEWER",
+  EDITOR = "EDITOR",
+  ADMIN ="ADMIN"
+}
 
-export type UserProfileDTO = {
-  id: string;
-  name: string | null;
-  email: string;
-  image: string | null;
-  role: string;
-  banned: boolean | null;
-  banReason?: string | null;
-  banExpires?: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
+export enum Gender {
+  Male = "Male",
+  Female = "Female",
+  OTHER = "OTHER"
+}
 
 export type UserUpdateProfileDTO = {
   name?: string | null;
   image?: string | null;
+  gender?: Gender | null;
+  phone?: string | null;
+  address?: string | null;
 };
+
+export type UserLookupDTO = {
+  id: string;
+  name: string | null;
+  email: string;
+};
+
+export type ApiSessionResponse = {
+  session: Session,
+  user: User
+}
 
 /**
  * Admin-only actions
  */
-export type AdminBanUserDTO = {
+/**
+ * ===== Admin User DTOs =====
+ */
+
+export type AdminUserListItemDTO = {
+  id: string;
+  name: string | null;
+  email: string;
+  role: Role.ADMIN;
+  gender: Gender | null;
+  phone: string;
+  createdAt: Date;
+  updatedAt: Date;
+  banned: boolean;
+};
+
+export type AdminUserDetailDTO = {
+  id: string;
+  name: string | null;
+  email: string;
+  role: Role.ADMIN;
+  gender: Gender | null;
+  phone: string;
+  image: string | null;
+  address: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+
+  articles: ArticleListItemDTO[];
+  reviews: ReviewListItemDTO[];
+
+  banned: boolean;
+  banInfo?: {
+    reason: string | null;
+    expiresAt: Date | null;
+  } | null;
+};
+
+export type AdminBanUserResponseDTO = {
   userId: string;
+  banned: boolean;
   reason?: string | null;
   expiresAt?: Date | null;
 };
 
-export type AdminChangeRoleDTO = {
+export type AdminChangeRoleResponseDTO = {
   userId: string;
-  role: string;
+  role: Role;
 };
+
 
 /**
  * ===== Article DTOs =====
  */
-
 export type ArticleCreateDTO = {
   title: string;
   abstract: string;
-  fileUrl: string; // pdf url
+  fileUrl: string;
   keywords?: string | null;
   coverImage?: string | null;
+
+  authors: {
+    email: string;            // search by registered email
+    fullName?: string;        // optional: just for display on client
+    designation?: string;     // optional
+    affiliation?: string;     // college / university / address
+    phone?: string;           // optional
+  }[];
 };
+
 
 export type ArticleListItemDTO = {
   id: string;
@@ -69,7 +133,7 @@ export type ArticleListItemDTO = {
   createdAt: Date;
   updatedAt: Date;
   fileUrl: string;
-  coverImage: string | null;
+  coverImage?: string | null;
 };
 
 export type ArticleDetailDTO = {
@@ -108,7 +172,6 @@ export type ArticleDetailDTO = {
 /**
  * ===== Review DTOs =====
  */
-
 export type ReviewCreateDTO = {
   articleId: string;
   comments: string;
@@ -129,7 +192,6 @@ export type ReviewListItemDTO = {
 /**
  * ===== Payment DTOs =====
  */
-
 export type PaymentDTO = {
   id: string;
   articleId: string;
@@ -151,7 +213,6 @@ export type PaymentCreateDTO = {
 /**
  * ===== Admin DTOs =====
  */
-
 export type JournalCreateDTO = {
   name: string;
   issn: string;
@@ -173,9 +234,8 @@ export type IssueCreateDTO = {
 };
 
 /**
- * ===== Controller Response DTOs =====
+ * ===== API Response DTOs =====
  */
-
 export type ApiSuccessResponse<T> = {
   success: true;
   data: T;
@@ -187,7 +247,6 @@ export type ApiErrorResponse = {
   error: string;
 };
 
-/**
- * Utility union for controller returns
- */
 export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
+
+

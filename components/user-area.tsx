@@ -1,30 +1,23 @@
 "use client"
 
-import { authClient } from "@/lib/auth-client";
 import { Button } from "./ui/button";
 import { UserDropdown } from "./UserDropdown";
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useUserStore } from "@/store/userStore";
+import { useSession } from "@/hooks/use-user";
 
 const UserArea = () => {
   const { session: apiSession, setSession } = useUserStore();
 
-  const { data: fetchedSession } = useQuery({
-    queryKey: ["session"],
-    queryFn: () => authClient.getSession(),
-  });
+  const { session } = useSession();
 
   useEffect(() => {
-    if (fetchedSession?.data) {
-      setSession({
-        session: fetchedSession.data.session,
-        user: fetchedSession.data.user,
-      });
+    if (session) {
+      setSession(session);
     } else {
       setSession(null);
     }
-  }, [fetchedSession, setSession]);
+  }, [session, setSession]);
 
   return apiSession?.user ? (
     <UserDropdown

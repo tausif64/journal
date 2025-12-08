@@ -36,3 +36,12 @@ export const IssueStatus = {
 } as const
 
 export type IssueStatus = (typeof IssueStatus)[keyof typeof IssueStatus]
+
+
+export const Gender = {
+  Male: 'Male',
+  Female: 'Female',
+  OTHER: 'OTHER'
+} as const
+
+export type Gender = (typeof Gender)[keyof typeof Gender]

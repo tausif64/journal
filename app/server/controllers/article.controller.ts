@@ -1,114 +1,156 @@
 // app/server/controllers/article.controller.ts
 import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
-import { articleService } from "../services";
 import { headers } from "next/headers";
+import { NextResponse } from "next/server";
+import { articleService } from "../services/article.service";
+import { z } from "zod";
 
-
-function parsePositiveInt(value: string | null, fallback: number) {
-  if (value === null || value === undefined || value === "") return fallback;
-  const n = Number(value);
-  if (!Number.isFinite(n) || !Number.isInteger(n) || n <= 0) return NaN;
-  return n;
+async function getSession() {
+  return auth.api.getSession({ headers: await headers() });
 }
 
 /**
- * GET /api/articles?limit=20&page=1
- * - limit: number of items per page (default 20, max 100)
- * - page: page number (default 1)
+ * GET /api/articles/user
+ * List articles where the current user is one of the authors.
+ * Supports ?limit & ?page query params.
  */
 export async function listMyArticlesController(req: Request) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
 
   const url = new URL(req.url);
-  const rawLimit = url.searchParams.get("limit");
-  const rawPage = url.searchParams.get("page");
+  const limit = parseInt(url.searchParams.get("limit") || "20", 10);
+  const page = parseInt(url.searchParams.get("page") || "1", 10);
 
-  const DEFAULT_LIMIT = 20;
-  const MAX_LIMIT = 100;
+  const take = Math.min(100, Math.max(1, limit));
+  const skip = Math.max(0, (page - 1) * take);
 
-  const parsedLimit = parsePositiveInt(rawLimit, DEFAULT_LIMIT);
-  const parsedPage = parsePositiveInt(rawPage, 1);
+  const articles = await articleService.listMyArticles(session.user.id, {
+    take,
+    skip,
+  });
 
-  if (!Number.isFinite(parsedLimit) || Number.isNaN(parsedLimit)) {
-    return NextResponse.json(
-      { error: "Invalid query: limit must be a positive integer" },
-      { status: 400 }
-    );
-  }
-  if (!Number.isFinite(parsedPage) || Number.isNaN(parsedPage)) {
-    return NextResponse.json(
-      { error: "Invalid query: page must be a positive integer" },
-      { status: 400 }
-    );
-  }
-
-  const limit = Math.min(MAX_LIMIT, parsedLimit);
-  const page = Math.max(1, parsedPage);
-  const take = limit;
-  const skip = (page - 1) * take;
-
-  try {
-    const articles = await articleService.listMyArticles(session.user.id, {
-      take,
-      skip,
-    });
-    return NextResponse.json({
-      data: articles,
-      meta: {
-        limit: take,
-        page,
-        returned: Array.isArray(articles) ? articles.length : 0,
-      },
-    });
-  } catch (err) {
-    // If you want more granular error handling, check error types (NotFoundError, PermissionError, etc.)
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+  return NextResponse.json({
+    success: true,
+    data: articles,
+    meta: { limit: take, page, returned: articles.length },
+  });
 }
 
-// POST /api/articles -> submit article (unchanged)
+/**
+ * POST /api/articles/user
+ * Submit a new article with 1–4 authors identified by email.
+ */
+const submitArticleBodySchema = z.object({
+  title: z.string().min(1),
+  abstract: z.string().min(1),
+  fileUrl: z.string().min(1),
+  keywords: z.string().nullable().optional(),
+  coverImage: z.string().nullable().optional(),
+  authors: z
+    .array(
+      z.object({
+        // Optional name & affiliation for UI; backend trusts email
+        fullName: z.string().optional(),
+        email: z.string().email(), // REQUIRED for lookup
+        affiliation: z.string().optional(),
+      })
+    )
+    .min(1)
+    .max(4),
+});
+
 export async function submitArticleController(req: Request) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
-
-  // Basic runtime checks (use Zod for production)
-  const payload = body as Record<string, unknown>;
-  if (!payload.title || !payload.abstract || !payload.fileUrl) {
+  const session = await getSession();
+  if (!session) {
     return NextResponse.json(
-      { error: "Missing required fields: title, abstract, fileUrl" },
-      { status: 422 }
+      { success: false, error: "Unauthorized" },
     );
   }
 
-  try {
-    const article = await articleService.submitArticle(session.user.id, {
-      title: String(payload.title),
-      abstract: String(payload.abstract),
-      fileUrl: String(payload.fileUrl),
-      keywords: typeof payload.keywords === "string" ? payload.keywords : null,
-      coverImage:
-        typeof payload.coverImage === "string" ? payload.coverImage : null,
-    });
+  const json = await req.json();
+  const parsed = submitArticleBodySchema.safeParse(json);
 
-    return NextResponse.json(article, { status: 201 });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+  if (!parsed.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Invalid payload" + parsed.error.flatten(),
+      },
+    );
   }
+
+  const article = await articleService.submitArticle(
+    session.user.id,
+    parsed.data
+  );
+
+  return NextResponse.json({ success: true, data: article });
+}
+
+/**
+ * PUT /api/articles/user
+ * Body: { articleId, ...fieldsToUpdate }
+ */
+export async function updateArticleController(req: Request) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  const body = await req.json();
+  const { articleId, ...data } = body ?? {};
+
+  if (!articleId || typeof articleId !== "string") {
+    return NextResponse.json(
+      { success: false, error: "articleId is required" },
+      { status: 400 }
+    );
+  }
+
+  const updated = await articleService.updateArticle(
+    session.user.id,
+    articleId,
+    data
+  );
+
+  return NextResponse.json({ success: true, data: updated });
+}
+
+/**
+ * DELETE /api/articles/user?articleId=...
+ */
+export async function withdrawArticleController(req: Request) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  const url = new URL(req.url);
+  const articleId = url.searchParams.get("articleId");
+
+  if (!articleId) {
+    return NextResponse.json(
+      { success: false, error: "articleId is required" },
+      { status: 400 }
+    );
+  }
+
+  const result = await articleService.withdrawArticle(
+    session.user.id,
+    articleId
+  );
+
+  return NextResponse.json({ success: true, data: result });
 }

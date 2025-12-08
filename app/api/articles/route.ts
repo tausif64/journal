@@ -1,13 +1,6 @@
 // app/api/articles/route.ts
-import {
-  listMyArticlesController,
-  submitArticleController,
-} from "../../server/controllers/article.controller";
 
-/**
- * GET  -> list user's articles (supports ?limit & ?page handled by controller)
- * POST -> submit article (JSON body expected)
- */
+import { listMyArticlesController, submitArticleController } from "@/app/server/controllers";
 
 export async function GET(req: Request) {
   return listMyArticlesController(req);

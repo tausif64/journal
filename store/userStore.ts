@@ -1,12 +1,7 @@
 'use client';
 
+import { ApiSessionResponse } from '@/types/dto';
 import { create } from 'zustand';
-import { Session, User } from 'better-auth';
-
-type ApiSessionResponse = {
-    session: Session,
-    user: User
-}
 
 // 1. Define the store interface
 interface UserStore {
@@ -18,4 +13,5 @@ interface UserStore {
 export const useUserStore = create<UserStore>((set) => ({
     session: null,
     setSession: (session) => set({ session }),
+    
 }));

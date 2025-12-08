@@ -1,4 +1,3 @@
-// lib/api.ts
 // Type-safe XHR helpers that automatically manage headers (Accept, Content-Type),
 // enable credentials, and return strongly-typed responses (no `any`).
 
@@ -63,7 +62,7 @@ export function xhrRequest<Response, Body = undefined>(
 
     try {
       xhr.open(method, url, true);
-    } catch (err) {
+    } catch {
       return reject(new ApiError("Invalid URL or method", 0));
     }
 
@@ -94,7 +93,7 @@ export function xhrRequest<Response, Body = undefined>(
       if (contentType.includes("application/json")) {
         try {
           parsed = JSON.parse(raw) as Response;
-        } catch (err) {
+        } catch {
           // malformed JSON
           return reject(
             new ApiError("Failed to parse JSON response", status, raw)
@@ -124,7 +123,7 @@ export function xhrRequest<Response, Body = undefined>(
     if (body !== undefined) {
       try {
         xhr.send(JSON.stringify(body));
-      } catch (err) {
+      } catch {
         reject(new ApiError("Failed to send request body", 0));
       }
     } else {

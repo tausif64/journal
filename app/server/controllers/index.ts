@@ -1,2 +1,1 @@
-// // app/server/controllers/index.ts
-// export * from "./article.controller";
+export * from "./article.controller";

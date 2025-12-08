@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Book,
   Menu,
@@ -13,7 +13,6 @@ import {
   Calendar,
   ChevronDown,
 } from "lucide-react";
-
 import {
   Accordion,
   AccordionContent,
@@ -166,7 +165,6 @@ const menu: MenuItem[] = [
   },
 ];
 
-
 const Navbar: React.FC<NavbarProps> = ({
   logo = {
     url: "/",
@@ -198,7 +196,7 @@ const Navbar: React.FC<NavbarProps> = ({
         </Link>
 
         {/* Desktop Menu */}
-        <nav className="hidden lg:flex items-center gap-6 lg:gap-x-6 relative">
+        <nav className="hidden lg:flex items-center gap-6 lg:gap-x-6 relative font-light">
           {menu.map((item) =>
             item.items ? (
               <div key={item.title} className="group relative">

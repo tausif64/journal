@@ -30,9 +30,6 @@ export const userDAL = {
         emailVerified: true,
         createdAt: true,
         updatedAt: true,
-        banned: true,
-        banReason: true,
-        banExpires: true,
       },
     });
   },
@@ -48,7 +45,6 @@ export const userDAL = {
         name: true,
         email: true,
         role: true,
-        banned: true,
       },
     });
   },
@@ -104,28 +100,28 @@ export const userDAL = {
    * Admin-only actions: ban/unban a user or set ban metadata.
    * Service/controller should enforce the caller is an ADMIN.
    */
-  banUser: async (
-    id: string,
-    opts?: { reason?: string | null; expiresAt?: Date | null }
-  ) => {
-    return prisma.user.update({
-      where: { id },
-      data: {
-        banned: true,
-        banReason: opts?.reason ?? null,
-        banExpires: opts?.expiresAt ?? null,
-      },
-      select: { id: true, banned: true, banReason: true, banExpires: true },
-    });
-  },
+  // banUser: async (
+  //   id: string,
+  //   opts?: { reason?: string | null; expiresAt?: Date | null }
+  // ) => {
+  //   return prisma.user.update({
+  //     where: { id },
+  //     data: {
+  //       banned: true,
+  //       banReason: opts?.reason ?? null,
+  //       banExpires: opts?.expiresAt ?? null,
+  //     },
+  //     select: { id: true, banned: true, banReason: true, banExpires: true },
+  //   });
+  // },
 
-  unbanUser: async (id: string) => {
-    return prisma.user.update({
-      where: { id },
-      data: { banned: false, banReason: null, banExpires: null },
-      select: { id: true, banned: true },
-    });
-  },
+  // unbanUser: async (id: string) => {
+  //   return prisma.user.update({
+  //     where: { id },
+  //     data: { banned: false, banReason: null, banExpires: null },
+  //     select: { id: true, banned: true },
+  //   });
+  // },
 
   /**
    * Admin: change role (EDITOR, REVIEWER, ADMIN, etc).
@@ -155,7 +151,6 @@ export const userDAL = {
         name: true,
         email: true,
         role: true,
-        banned: true,
         createdAt: true,
       },
     });

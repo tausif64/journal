@@ -395,6 +395,7 @@ export const ModelName = {
   Verification: 'Verification',
   Journal: 'Journal',
   Article: 'Article',
+  ArticleAuthor: 'ArticleAuthor',
   Payment: 'Payment',
   Review: 'Review',
   Volume: 'Volume',
@@ -414,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "journal" | "article" | "payment" | "review" | "volume" | "issue"
+    modelProps: "user" | "session" | "account" | "verification" | "journal" | "article" | "articleAuthor" | "payment" | "review" | "volume" | "issue"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -814,6 +815,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ArticleAuthor: {
+      payload: Prisma.$ArticleAuthorPayload<ExtArgs>
+      fields: Prisma.ArticleAuthorFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ArticleAuthorFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArticleAuthorPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ArticleAuthorFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArticleAuthorPayload>
+        }
+        findFirst: {
+          args: Prisma.ArticleAuthorFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArticleAuthorPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ArticleAuthorFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArticleAuthorPayload>
+        }
+        findMany: {
+          args: Prisma.ArticleAuthorFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArticleAuthorPayload>[]
+        }
+        create: {
+          args: Prisma.ArticleAuthorCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArticleAuthorPayload>
+        }
+        createMany: {
+          args: Prisma.ArticleAuthorCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ArticleAuthorDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArticleAuthorPayload>
+        }
+        update: {
+          args: Prisma.ArticleAuthorUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArticleAuthorPayload>
+        }
+        deleteMany: {
+          args: Prisma.ArticleAuthorDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ArticleAuthorUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ArticleAuthorUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ArticleAuthorPayload>
+        }
+        aggregate: {
+          args: Prisma.ArticleAuthorAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateArticleAuthor>
+        }
+        groupBy: {
+          args: Prisma.ArticleAuthorGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ArticleAuthorGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ArticleAuthorCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ArticleAuthorCountAggregateOutputType> | number
+        }
+      }
+    }
     Payment: {
       payload: Prisma.$PaymentPayload<ExtArgs>
       fields: Prisma.PaymentFieldRefs
@@ -1123,12 +1190,12 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   role: 'role',
+  gender: 'gender',
+  phone: 'phone',
   image: 'image',
+  address: 'address',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  banned: 'banned',
-  banReason: 'banReason',
-  banExpires: 'banExpires'
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -1197,7 +1264,6 @@ export const ArticleScalarFieldEnum = {
   coverImage: 'coverImage',
   keywords: 'keywords',
   status: 'status',
-  authorId: 'authorId',
   editorId: 'editorId',
   issueId: 'issueId',
   createdAt: 'createdAt',
@@ -1205,6 +1271,19 @@ export const ArticleScalarFieldEnum = {
 } as const
 
 export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
+
+
+export const ArticleAuthorScalarFieldEnum = {
+  id: 'id',
+  articleId: 'articleId',
+  authorId: 'authorId',
+  authorOrder: 'authorOrder',
+  isCorresponding: 'isCorresponding',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArticleAuthorScalarFieldEnum = (typeof ArticleAuthorScalarFieldEnum)[keyof typeof ArticleAuthorScalarFieldEnum]
 
 
 export const PaymentScalarFieldEnum = {
@@ -1278,8 +1357,9 @@ export const UserOrderByRelevanceFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
+  phone: 'phone',
   image: 'image',
-  banReason: 'banReason'
+  address: 'address'
 } as const
 
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
@@ -1337,12 +1417,20 @@ export const ArticleOrderByRelevanceFieldEnum = {
   fileUrl: 'fileUrl',
   coverImage: 'coverImage',
   keywords: 'keywords',
-  authorId: 'authorId',
   editorId: 'editorId',
   issueId: 'issueId'
 } as const
 
 export type ArticleOrderByRelevanceFieldEnum = (typeof ArticleOrderByRelevanceFieldEnum)[keyof typeof ArticleOrderByRelevanceFieldEnum]
+
+
+export const ArticleAuthorOrderByRelevanceFieldEnum = {
+  id: 'id',
+  articleId: 'articleId',
+  authorId: 'authorId'
+} as const
+
+export type ArticleAuthorOrderByRelevanceFieldEnum = (typeof ArticleAuthorOrderByRelevanceFieldEnum)[keyof typeof ArticleAuthorOrderByRelevanceFieldEnum]
 
 
 export const PaymentOrderByRelevanceFieldEnum = {
@@ -1413,6 +1501,13 @@ export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
 
 
 /**
+ * Reference to a field of type 'Gender'
+ */
+export type EnumGenderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Gender'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -1427,16 +1522,16 @@ export type EnumArticleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
 
 
 /**
- * Reference to a field of type 'Float'
+ * Reference to a field of type 'Int'
  */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
 /**
- * Reference to a field of type 'Int'
+ * Reference to a field of type 'Float'
  */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
 
 
@@ -1539,6 +1634,7 @@ export type GlobalOmitConfig = {
   verification?: Prisma.VerificationOmit
   journal?: Prisma.JournalOmit
   article?: Prisma.ArticleOmit
+  articleAuthor?: Prisma.ArticleAuthorOmit
   payment?: Prisma.PaymentOmit
   review?: Prisma.ReviewOmit
   volume?: Prisma.VolumeOmit

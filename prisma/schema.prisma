@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -35,26 +29,31 @@ enum IssueStatus {
   PUBLISHED
 }
 
+enum Gender {
+  Male
+  Female
+  OTHER
+}
+
 model User {
   id            String   @id
   name          String   @db.Text
   email         String
   emailVerified Boolean  @default(false)
   role          Role     @default(AUTHOR)
+  gender        Gender?
+  phone         String
   image         String?  @db.Text
+  address       String?  @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
 
   // Relations
-  articles      Article[] @relation("AuthorArticles")
-  assignedEdits Article[] @relation("EditorAssignments")
-  reviews       Review[]  @relation("ReviewerReviews")
-  sessions      Session[]
-  accounts      Account[]
-
-  banned     Boolean?  @default(false)
-  banReason  String?   @db.Text
-  banExpires DateTime?
+  articleAuthorships ArticleAuthor[] @relation("UserAuthors")
+  assignedEdits      Article[]       @relation("EditorAssignments")
+  reviews            Review[]        @relation("ReviewerReviews")
+  sessions           Session[]
+  accounts           Account[]
 
   @@unique([email])
   @@map("user")
@@ -74,6 +73,7 @@ model Session {
   impersonatedBy String? @db.Text
 
   @@unique([token])
+  @@index([userId(length: 191)])
   @@map("session")
 }
 
@@ -93,6 +93,7 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  @@index([userId(length: 191)])
   @@map("account")
 }
 
@@ -104,6 +105,7 @@ model Verification {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 
+  @@index([identifier(length: 191)])
   @@map("verification")
 }
 
@@ -126,8 +128,7 @@ model Article {
   keywords   String? // Comma-separated keywords
   status     ArticleStatus @default(SUBMITTED)
 
-  author   User   @relation("AuthorArticles", fields: [authorId], references: [id])
-  authorId String
+  authors ArticleAuthor[] @relation("ArticleAuthors")
 
   editor   User?   @relation("EditorAssignments", fields: [editorId], references: [id])
   editorId String?
@@ -139,6 +140,28 @@ model Article {
   reviews   Review[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ArticleAuthor {
+  id String @id @default(cuid())
+
+  article   Article @relation("ArticleAuthors", fields: [articleId], references: [id], onDelete: Cascade)
+  articleId String
+
+  author   User   @relation("UserAuthors", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  /// 1 = first author, 2 = second, etc.
+  authorOrder     Int
+  isCorresponding Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([articleId, authorId]) // same user can't be added twice
+  @@unique([articleId, authorOrder]) // order per article must be unique
+  @@index([authorId])
+  @@index([articleId])
 }
 
 model Payment {

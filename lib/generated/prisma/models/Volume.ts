@@ -427,14 +427,6 @@ export type VolumeUncheckedUpdateManyWithoutJournalNestedInput = {
   deleteMany?: Prisma.VolumeScalarWhereInput | Prisma.VolumeScalarWhereInput[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type VolumeCreateNestedOneWithoutIssuesInput = {
   create?: Prisma.XOR<Prisma.VolumeCreateWithoutIssuesInput, Prisma.VolumeUncheckedCreateWithoutIssuesInput>
   connectOrCreate?: Prisma.VolumeCreateOrConnectWithoutIssuesInput
