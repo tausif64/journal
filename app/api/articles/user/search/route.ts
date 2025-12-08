@@ -20,8 +20,7 @@ export async function GET(req: NextRequest) {
     const session = await getSession();
     if (!session) {
         return NextResponse.json<ApiResponse<null>>(
-            { success: false, error: "Unauthorized" },
-            { status: 401 }
+            { success: false, error: "Unauthorized" }
         );
     }
 

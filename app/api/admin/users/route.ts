@@ -11,12 +11,12 @@ export async function GET() {
   });
 
   if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ success: false, error: "Unauthorized" });
 
   // load full user record to get role and other metadata
   const actor = await userDAL.findById(session.user.id);
   if (!actor)
-    return NextResponse.json({ error: "User not found" }, { status: 401 });
+    return NextResponse.json({ success: false, error: "User not found" });
 
   try {
     const users = await adminService.listUsers(
@@ -26,8 +26,8 @@ export async function GET() {
     return NextResponse.json(users);
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Unknown error" },
-      { status: 403 }
+      { success: false, error: err instanceof Error ? err.message : "Unknown error" },
+
     );
   }
 }
@@ -38,22 +38,22 @@ export async function POST(req: Request) {
   });
 
   if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ success: false, error: "Unauthorized" });
 
   // load full user record to get role and other metadata
   const actor = await userDAL.findById(session.user.id);
   if (!actor)
-    return NextResponse.json({ error: "User not found" }, { status: 401 });
+    return NextResponse.json({ success: false, error: "User not found" });
 
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Invalid JSON" });
   }
 
   if (actor.role !== "ADMIN")
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return NextResponse.json({ success: false, error: "Forbidden" });
 
   const payload = body as Record<string, unknown>;
 
@@ -62,8 +62,7 @@ export async function POST(req: Request) {
     const issn = String(payload.issn || "");
     if (!name || !issn)
       return NextResponse.json(
-        { error: "Missing name or issn" },
-        { status: 422 }
+        { success: false, error: "Missing name or issn" }
       );
 
     try {
@@ -71,14 +70,13 @@ export async function POST(req: Request) {
         { role: actor.role },
         { name, issn }
       );
-      return NextResponse.json(journal, { status: 201 });
+      return NextResponse.json({ success: false, data: journal });
     } catch (err) {
       return NextResponse.json(
-        { error: err instanceof Error ? err.message : "Unknown error" },
-        { status: 500 }
+        { success: false, error: err instanceof Error ? err.message : "Unknown error" }
       );
     }
   }
 
-  return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+  return NextResponse.json({ success: false, error: "Invalid action" });
 }

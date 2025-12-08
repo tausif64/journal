@@ -18,8 +18,7 @@ export async function listMyArticlesController(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json(
-      { success: false, error: "Unauthorized" },
-      { status: 401 }
+      { success: false, error: "Unauthorized" }
     );
   }
 
@@ -102,7 +101,6 @@ export async function updateArticleController(req: Request) {
   if (!session) {
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
-      { status: 401 }
     );
   }
 
@@ -112,7 +110,6 @@ export async function updateArticleController(req: Request) {
   if (!articleId || typeof articleId !== "string") {
     return NextResponse.json(
       { success: false, error: "articleId is required" },
-      { status: 400 }
     );
   }
 
@@ -133,7 +130,6 @@ export async function withdrawArticleController(req: Request) {
   if (!session) {
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
-      { status: 401 }
     );
   }
 
@@ -143,7 +139,6 @@ export async function withdrawArticleController(req: Request) {
   if (!articleId) {
     return NextResponse.json(
       { success: false, error: "articleId is required" },
-      { status: 400 }
     );
   }
 

@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     headers: await headers(),
   });
   if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ success: false, error: "Unauthorized" });
 
   const url = new URL(req.url);
   // id is part of path; Next provides it via the pathname
@@ -39,7 +39,7 @@ export async function DELETE(req: Request) {
     headers: await headers(),
   });
   if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ success: false, error: "Unauthorized" });
 
   const url = new URL(req.url);
   const parts = url.pathname.split("/");

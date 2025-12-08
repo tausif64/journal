@@ -21,7 +21,6 @@ export async function GET(req: NextRequest) {
     if (!session) {
         return NextResponse.json<ApiResponse<null>>(
             { success: false, error: "Unauthorized" },
-            { status: 401 }
         );
     }
 
@@ -29,7 +28,6 @@ export async function GET(req: NextRequest) {
     if (!email) {
         return NextResponse.json<ApiResponse<null>>(
             { success: false, error: "email is required" },
-            { status: 400 }
         );
     }
 
@@ -37,7 +35,6 @@ export async function GET(req: NextRequest) {
     if (!user) {
         return NextResponse.json<ApiResponse<null>>(
             { success: false, error: "User not found" },
-            { status: 404 }
         );
     }
 

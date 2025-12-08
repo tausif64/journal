@@ -20,20 +20,20 @@ export async function POST(req: Request) {
   });
 
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ success: false, error: "Unauthorized" });
   }
 
   // load full user record (to get role and other metadata)
   const actor = await userDAL.findById(session.user.id);
   if (!actor) {
-    return NextResponse.json({ error: "User not found" }, { status: 401 });
+    return NextResponse.json({ success: false, error: "User not found" });
   }
 
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Invalid JSON" });
   }
 
   const payload = body as Record<string, unknown>;
@@ -43,24 +43,23 @@ export async function POST(req: Request) {
     if (action === "assign") {
       // only editors/admins can assign reviewers
       if (!["EDITOR", "ADMIN"].includes(actor.role as string)) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        return NextResponse.json({ success: false, error: "Forbidden" });
       }
 
       const articleId = String(payload.articleId || "");
       const reviewerId = String(payload.reviewerId || "");
       if (!articleId || !reviewerId) {
         return NextResponse.json(
-          { error: "Missing articleId or reviewerId" },
-          { status: 422 }
+          { success: false, error: "Missing articleId or reviewerId" },
         );
       }
 
-      await reviewService.assignReview(
+      const result = await reviewService.assignReview(
         { role: actor.role as string },
         articleId,
         reviewerId
       );
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true, data: result });
     }
 
     if (action === "submit") {
@@ -70,8 +69,7 @@ export async function POST(req: Request) {
       const recommendation = String(payload.recommendation || "");
       if (!reviewId)
         return NextResponse.json(
-          { error: "Missing reviewId" },
-          { status: 422 }
+          { success: false, error: "Missing reviewId" },
         );
 
       // Ensure the actor is the reviewer (or admin)
@@ -85,13 +83,12 @@ export async function POST(req: Request) {
         recommendation,
       });
 
-      return NextResponse.json(updated);
+      return NextResponse.json({ success: true, data:updated});
     }
 
-    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Invalid action" });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    const status = (err as { status?: number })?.status ?? 500;
-    return NextResponse.json({ error: message }, { status });
+    return NextResponse.json({ success: false, error: message });
   }
 }
