@@ -36,7 +36,7 @@ const UserProfile = ({session}:{session: ApiSessionResponse}) => {
                 {session && session.user.name}
               </h1>
             </div>
-            <p className="text-muted-foreground">Senior Product Designer</p>
+            <p className="text-muted-foreground">Assistant Professor</p>
             <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <Mail className="size-4" />

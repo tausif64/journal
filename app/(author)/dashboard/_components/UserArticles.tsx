@@ -3,7 +3,6 @@
 
 import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -14,7 +13,8 @@ import {
 import { useUserArticles } from "@/hooks/use-user";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import ArticleCard from "@/components/article-card";
+import ArticleCardSkeleton from "@/components/article-card-skeleton";
+import AutherArticleCard from "./AuthorArticleCard";
 
 type SortOption =
   | "date-desc"
@@ -29,7 +29,7 @@ export default function UserArticles() {
 
   const sortedArticles = useMemo(() => {
     if (!articles) return [];
-    const copy = [...articles].slice(0, 5);
+    const copy = [...articles].slice(0, 4);
 
     const statusOrder = [
       "SUBMITTED",
@@ -68,19 +68,7 @@ export default function UserArticles() {
   /* ---------- LOADING ---------- */
   if (isLoading) {
     return (
-      <div className="space-y-4 mt-8">
-        {[1, 2, 3].map((i) => (
-          <Card key={i}>
-            <CardContent className="flex gap-4">
-              <Skeleton className="h-20 w-20 rounded-full" />
-              <div className="flex-1 space-y-2">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <ArticleCardSkeleton />
     );
   }
 
@@ -124,18 +112,27 @@ export default function UserArticles() {
       </div>
 
       {/* LIST */}
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         {sortedArticles.map((article) => (
-          <ArticleCard key={article.id} article={article} />
+          <AutherArticleCard key={article.id} article={article} />
         ))}
-        {articles.length > 5 && (
-          <div className="flex justify-center items-center">
-            {" "}
-            <Link href="/dashboard/submit" className={buttonVariants()}>
-              See All
+        <div className="flex justify-center items-center gap-3">
+          {articles.length > 0 && (
+            <Link
+              href="/dashboard/submit"
+              className={buttonVariants({
+                variant: "outline",
+              })}
+            >
+              Submit New Artilce
             </Link>
-          </div>
-        )}
+          )}
+          {articles.length > 4 && (
+            <Link href="/dashboard/articles" className={buttonVariants()}>
+              See All Articles
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );

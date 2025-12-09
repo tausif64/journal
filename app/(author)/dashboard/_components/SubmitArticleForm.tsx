@@ -34,7 +34,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { useUserSearchSuggestions } from "@/hooks/use-user";
+import { useUserArticles, useUserSearchSuggestions } from "@/hooks/use-user";
 import { toast } from "sonner";
 
 /* ----------------------------- */
@@ -78,6 +78,8 @@ export default function SubmitArticleForm() {
   const [authorCount, setAuthorCount] = useState<1 | 2 | 3 | 4>(1);
   const [searchLoading, setSearchLoading] = useState(false);
   const [initializedMainAuthor, setInitializedMainAuthor] = useState(false);
+
+  const {submitArticle} = useUserArticles();
 
   const { data: session } = authClient.useSession();
   const { suggestions, isLoading: suggestionLoading } =
@@ -182,7 +184,6 @@ export default function SubmitArticleForm() {
 
     setAuthorSearchEmail("");
   }
-
 
   async function handleAddAuthor() {
     setAuthorSearchError(null);
@@ -295,21 +296,12 @@ export default function SubmitArticleForm() {
       fileUrl: values.fileUrl.trim(),
       keywords: values.keywords?.trim() || null,
       coverImage: null,
-      authors: selectedAuthors.map((a) => ({ email: a.email })), // service resolves to authorId
+      authors: selectedAuthors,
     };
 
     try {
-      const res = await apiPost<
-        ApiResponse<ArticleDetailDTO>,
-        ArticleCreateDTO
-      >("/api/articles/user", payload);
-
-      if (!res.success) {
-        setMsg(res.error ?? "Failed to submit article");
-        toast.error("Failed to submit article");
-        return;
-      }
-
+      
+      await submitArticle.mutateAsync(payload);
       setMsg("Article submitted successfully!");
       toast.success("Article submitted successfully!");
 
