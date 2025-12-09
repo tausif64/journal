@@ -1,18 +1,23 @@
-import type { Metadata } from "next";
 
+import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar";
 import Footer from "@/components/footer";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: "Dashboard",
   description: "Reasearch article",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+const AuthorLayout = async ({ children }: { children: React.ReactNode }) => {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    if (!session) {
+      return redirect("/");
+    }
   return (
     <>
       <Navbar />
@@ -21,3 +26,5 @@ export default function RootLayout({
     </>
   );
 }
+
+export default AuthorLayout
