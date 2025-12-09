@@ -14,7 +14,13 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useSignOut } from "@/hooks/use-signout"
-import { LogOutIcon, BookOpen, ChevronDownIcon, LayoutDashboardIcon, User } from "lucide-react"
+import {
+  LogOutIcon,
+  BookOpen,
+  ChevronDownIcon,
+  LayoutDashboardIcon,
+  Newspaper,
+} from "lucide-react";
 import Link from "next/link"
 
 
@@ -72,9 +78,9 @@ export function UserDropdown({name, email, image}:iAppProps) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="/dashboard/profile">
-                <User size={16} className="opacity-60" aria-hidden="true" />
-                <span>Profile</span>
+              <Link href="/dashboard/submit">
+                <Newspaper size={16} className="opacity-60" aria-hidden="true" />
+                <span>Submit New Article</span>
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>

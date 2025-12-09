@@ -1,5 +1,5 @@
 // server/dal/article.dal.ts
-import type { ArticleStatus, Prisma } from "@/lib/generated/prisma/client";
+import type { ArticleStatus } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -24,6 +24,8 @@ export const articleDAL = {
     coverImage?: string | null;
     authors: CreateArticleAuthorInput[];
   }) => {
+    // console.log(data)
+    // return data;
     const article = await prisma.article.create({
       data: {
         title: data.title,

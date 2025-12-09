@@ -9,6 +9,8 @@ import {
   ArticleCreateDTO,
   ArticleDetailDTO,
   ArticleListItemDTO,
+  PaginationQueryDTO,
+  PaginationMetaDTO, // 👈 add this
   UserLookupDTO,
 } from "@/types/dto";
 import { authClient } from "@/lib/auth-client";
@@ -32,43 +34,57 @@ export const useSession = () => {
 };
 
 /* ---------------- USER ARTICLES ---------------- */
-export const useUserArticles = () => {
-  const { data, isLoading } = useQuery<ArticleListItemDTO[]>({
-    queryKey: ["userArticles"],
+
+export const useUserArticles = (params?: PaginationQueryDTO) => {
+  const page = Math.max(1, params?.page ?? 1);
+  const limit = Math.min(100, Math.max(1, params?.limit ?? 20));
+
+  const { data, isLoading } = useQuery<ApiResponse<ArticleListItemDTO[]>>({
+    queryKey: ["userArticles", page, limit],
     queryFn: async () => {
       const res = await apiGet<ApiResponse<ArticleListItemDTO[]>>(
-        "/api/articles/user"
+        `/api/articles/user?page=${page}&limit=${limit}`
       );
 
       if (!res.success) {
         throw new Error(res.error || "Failed to fetch articles");
       }
-      
-      return res.data;
+
+      return res;
     },
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
- const submitArticle = useMutation<ArticleDetailDTO, Error, ArticleCreateDTO>({
-   mutationFn: async (payload) => {
-     const res = await apiPost<ApiResponse<ArticleDetailDTO>, ArticleCreateDTO>(
-       "/api/articles/user",
-       payload
-     );
+  const articles: ArticleListItemDTO[] = data?.success ? data.data : [];
 
-     if (!res.success) {
-       throw new Error(res.error || "Failed to submit article");
-     }
+  const meta: PaginationMetaDTO =
+    data?.success && data.meta
+      ? data.meta
+      : {
+          limit,
+          page,
+          returned: articles.length,
+        };
 
-     return res.data;
-   },
-   onSuccess: () => {
-     queryClient.invalidateQueries({ queryKey: ["userArticles"] });
-   },
- });
+  const submitArticle = useMutation<ArticleDetailDTO, Error, ArticleCreateDTO>({
+    mutationFn: async (payload) => {
+      const res = await apiPost<
+        ApiResponse<ArticleDetailDTO>,
+        ArticleCreateDTO
+      >("/api/articles/user", payload);
 
-  // ✅ UPDATE ARTICLE
+      if (!res.success) {
+        throw new Error(res.error || "Failed to submit article");
+      }
+
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userArticles"] });
+    },
+  });
+
   const updateArticle = useMutation<
     ArticleDetailDTO,
     Error,
@@ -91,7 +107,6 @@ export const useUserArticles = () => {
     },
   });
 
-  // ✅ WITHDRAW ARTICLE
   const withdrawArticle = useMutation<
     ArticleDetailDTO,
     Error,
@@ -114,7 +129,8 @@ export const useUserArticles = () => {
   });
 
   return {
-    articles: data,
+    articles,
+    meta, // 👈 now exposed
     isLoading,
     submitArticle,
     updateArticle,
@@ -122,6 +138,7 @@ export const useUserArticles = () => {
   };
 };
 
+/* ---------------- USER SEARCH SUGGESTIONS ---------------- */
 
 export const useUserSearchSuggestions = (rawQuery: string) => {
   const debounced = useDebounce(rawQuery, 300);
@@ -144,7 +161,7 @@ export const useUserSearchSuggestions = (rawQuery: string) => {
 
       return res.data;
     },
-    enabled: trimmed.length >= 2, // don't fire for very short input
+    enabled: trimmed.length >= 2,
     staleTime: 30_000,
     refetchOnWindowFocus: false,
   });

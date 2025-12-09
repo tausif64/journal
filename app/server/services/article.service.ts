@@ -11,6 +11,8 @@ export const articleService = {
   listMyArticles: (userId: string, opts?: { take?: number; skip?: number }) =>
     articleDAL.findManyByAuthorUserId(userId, opts),
 
+  getArticleById: (id: string) => articleDAL.findById(id),
+
   /**
    * Submit a new multi-author article.
    * - Authors are provided by email in the payload.

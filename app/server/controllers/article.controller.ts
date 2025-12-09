@@ -23,7 +23,7 @@ export async function listMyArticlesController(req: Request) {
   }
 
   const url = new URL(req.url);
-  const limit = parseInt(url.searchParams.get("limit") || "20", 10);
+  const limit = parseInt(url.searchParams.get("limit") || "10", 10);
   const page = parseInt(url.searchParams.get("page") || "1", 10);
 
   const take = Math.min(100, Math.max(1, limit));

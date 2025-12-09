@@ -6,16 +6,6 @@
 import { Session, User } from '@/lib/generated/prisma/client';
 
 
-export type PaginationQueryDTO = {
-  limit?: number;
-  page?: number;
-};
-
-export type PaginationMetaDTO = {
-  limit: number;
-  page: number;
-  returned: number;
-};
 
 /**
  * ===== User DTOs =====
@@ -24,7 +14,7 @@ export enum Role {
   AUTHOR = "AUTHOR",
   REVIEWER = "REVIEWER",
   EDITOR = "EDITOR",
-  ADMIN ="ADMIN"
+  ADMIN = "ADMIN"
 }
 
 export enum Gender {
@@ -130,11 +120,22 @@ export type ArticleListItemDTO = {
   id: string;
   title: string;
   status: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string;
+  updatedAt: Date | string;
   fileUrl: string;
   coverImage?: string | null;
+  keywords?: string | null;
+  authors: {
+    authorOrder: number;
+    isCorresponding: boolean;
+    author: {
+      id: string;
+      name: string | null;
+      email: string;
+    };
+  }[];
 };
+
 
 export type ArticleDetailDTO = {
   id: string;
@@ -236,6 +237,17 @@ export type IssueCreateDTO = {
 /**
  * ===== API Response DTOs =====
  */
+
+export type PaginationQueryDTO = {
+  limit?: number;
+  page?: number;
+};
+
+export type PaginationMetaDTO = {
+  limit: number;
+  page: number;
+  returned: number;
+};
 export type ApiSuccessResponse<T> = {
   success: true;
   data: T;

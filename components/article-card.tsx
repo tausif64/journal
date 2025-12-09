@@ -54,7 +54,6 @@ export type ArticleCardProps = {
 
 export default function ArticleCard({ article }: ArticleCardProps) {
   const { session } = useSession();
-  const isLoggedIn = !!session?.user;
   const currentUserEmail = session?.user?.email?.toLowerCase() ?? null;
 
   const created = new Date(article.createdAt).toLocaleDateString();
@@ -81,24 +80,18 @@ export default function ArticleCard({ article }: ArticleCardProps) {
               aa.author?.email?.toLowerCase() === currentUserEmail;
 
             if (isYou) parts.push("(You)");
-            if (aa.isCorresponding) parts.push("(Corresponding)");
 
             return parts.join(" ");
           })
           .join(", ")
       : null;
 
-  // Private meta: only if user logged in AND the data exists
-  const showEditor = isLoggedIn && article.editor;
-  const showIssue = isLoggedIn && article.issue;
-  const showPayment = isLoggedIn && article.payment;
-
   return (
     <Link href={`/article/${article.id}`}>
       <Card className="hover:shadow-lg transition-shadow">
-        <CardContent className="flex items-center gap-4">
+        <CardContent className="flex items-start gap-4">
           {/* Avatar / Cover image / Status */}
-          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-sm border bg-muted flex items-center justify-center">
+          <div className="relative h-35 w-35 shrink-0 overflow-hidden rounded-sm border bg-muted flex items-center justify-center">
             {article.coverImage ? (
               <Image
                 src={article.coverImage}
@@ -141,35 +134,6 @@ export default function ArticleCard({ article }: ArticleCardProps) {
               <p className="text-xs text-muted-foreground line-clamp-1">
                 <span className="font-medium">Keywords:</span>{" "}
                 {article.keywords}
-              </p>
-            )}
-
-            {/* Private meta (only when logged in) */}
-            {showEditor && (
-              <p className="text-xs text-muted-foreground line-clamp-1">
-                <span className="font-medium">Editor:</span>{" "}
-                {article.editor?.name ?? article.editor?.email}
-              </p>
-            )}
-
-            {showIssue && (
-              <p className="text-xs text-muted-foreground line-clamp-1">
-                <span className="font-medium">Issue:</span>{" "}
-                {article.issue?.issueNumber}
-              </p>
-            )}
-
-            {showPayment && (
-              <p className="text-xs text-muted-foreground line-clamp-1">
-                <span className="font-medium">Payment:</span>{" "}
-                {article.payment?.status}
-                {article.payment?.amount != null &&
-                  article.payment?.currency && (
-                    <>
-                      {" "}
-                      · {article.payment.amount} {article.payment.currency}
-                    </>
-                  )}
               </p>
             )}
           </div>

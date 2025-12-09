@@ -17,7 +17,6 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import ArticleCardSkeleton from "@/components/article-card-skeleton";
 
-
 const PAGE_SIZE = 10;
 
 export default function ArticlesPage() {
@@ -44,15 +43,14 @@ export default function ArticlesPage() {
   /* ---------- LOADING ---------- */
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto py-8 space-y-6">
+      <div className="max-w-6xl mx-auto py-8 space-y-6">
         <header>
           <h1 className="text-3xl font-bold tracking-tight">My Articles</h1>
           <p className="text-sm text-muted-foreground">
             Loading your submissions…
           </p>
         </header>
-
-       <ArticleCardSkeleton />
+        <ArticleCardSkeleton />
       </div>
     );
   }
@@ -86,7 +84,7 @@ export default function ArticlesPage() {
       </header>
 
       {/* List */}
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         {articles.map((article) => (
           <ArticleCard key={article.id} article={article} />
         ))}
