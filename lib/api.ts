@@ -46,9 +46,6 @@ function buildHeaders(hasBody: boolean, extra?: Record<string, string>) {
   };
 }
 
-/**
- * CORE XHR REQUEST (fully typed)
- */
 export function xhrRequest<Response, Body = undefined>(
   method: ApiMethod,
   url: string,

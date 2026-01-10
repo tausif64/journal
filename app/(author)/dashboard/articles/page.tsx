@@ -10,12 +10,11 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useUserArticles } from "@/hooks/use-user";
-import ArticleCard from "@/components/article-card";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import ArticleCardSkeleton from "@/components/article-card-skeleton";
+import AutherArticleCard from "../_components/AuthorArticleCard";
 
 const PAGE_SIZE = 10;
 
@@ -86,7 +85,7 @@ export default function ArticlesPage() {
       {/* List */}
       <div className="flex flex-col gap-4">
         {articles.map((article) => (
-          <ArticleCard key={article.id} article={article} />
+          <AutherArticleCard key={article.id} article={article} />
         ))}
       </div>
 

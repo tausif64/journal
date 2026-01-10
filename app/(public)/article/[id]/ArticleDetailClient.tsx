@@ -1,58 +1,15 @@
 // app/articles/[id]/ArticleDetailClient.tsx
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { apiGet } from "@/lib/api";
 import ArticleCard from "@/components/article-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import ArticleDetailSkeleton from "@/components/article-detail-skeleton";
+import { useArticleById } from "@/hooks/use-user";
 import { Badge } from "@/components/ui/badge";
-import { ApiResponse } from "@/types/dto";
 
-type ArticleAuthorDTO = {
-  authorOrder: number;
-  isCorresponding: boolean;
-  author: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
-};
 
-type ArticleDetailForView = {
-  id: string;
-  title: string;
-  abstract: string;
-  fileUrl: string;
-  coverImage: string | null;
-  keywords: string | null;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-
-  authors: ArticleAuthorDTO[];
-
-  editor: {
-    id: string;
-    name: string | null;
-    email: string;
-  } | null;
-
-  issue: {
-    id: string;
-    issueNumber: number;
-    volumeId?: string;
-  } | null;
-
-  payment: {
-    id: string;
-    status: string;
-    amount: number;
-    currency: string;
-  } | null;
-};
 
 type Props = {
   articleId: string;
@@ -61,50 +18,12 @@ type Props = {
 export default function ArticleDetailClient({ articleId }: Props) {
   const router = useRouter();
 
-  const {
-    data: article,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<ArticleDetailForView, Error>({
-    queryKey: ["articleDetail", articleId],
-    queryFn: async () => {
-      // 👇 IMPORTANT: type the response as ApiResponse<ArticleDetailForView>
-      const res = await apiGet<ApiResponse<ArticleDetailForView>>(
-        `/api/articles/${articleId}`
-      );
-
-      if (!res.success) {
-        throw new Error(res.error || "Failed to load article");
-      }
-
-      return res.data;
-    },
-    refetchOnWindowFocus: false,
-  });
+  const { article, isLoading, isError, error } = useArticleById(articleId);
 
   /* ---------- LOADING ---------- */
   if (isLoading) {
     return (
-      <div className="max-w-5xl mx-auto py-8 space-y-6">
-        <header>
-          <Skeleton className="h-8 w-1/3 mb-2" />
-          <Skeleton className="h-4 w-1/4" />
-        </header>
-
-        <Card>
-          <CardContent className="flex gap-4 py-4">
-            <Skeleton className="h-20 w-20 rounded-full" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-6 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-4 w-full" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Skeleton className="h-72 w-full" />
-      </div>
+      <ArticleDetailSkeleton />
     );
   }
 
@@ -123,8 +42,6 @@ export default function ArticleDetailClient({ articleId }: Props) {
     );
   }
 
-  const updatedDate = new Date(article.updatedAt).toLocaleDateString();
-
   return (
     <div className="max-w-6xl mx-auto py-8 p-4 space-y-6">
       {/* Header + basic info via reusable card */}
@@ -132,18 +49,6 @@ export default function ArticleDetailClient({ articleId }: Props) {
 
       {/* Meta row: submitted, updated, optional withdraw */}
       <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-6">
-        {article.issue && (
-          <>
-            <span>·</span>
-            <span>
-              Issue:{" "}
-              <Badge variant="outline" className="ml-1">
-                #{article.issue.issueNumber}
-              </Badge>
-            </span>
-          </>
-        )}
-        <span>Last updated: {updatedDate}</span>
 
         {article.payment && (
           <>

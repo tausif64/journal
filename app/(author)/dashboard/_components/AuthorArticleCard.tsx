@@ -6,58 +6,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useSession } from "@/hooks/use-user";
 import Link from "next/link";
+import { ArticleDetailDTO } from "@/types/dto";
 
-type ArticleAuthorDTO = {
-  authorOrder: number;
-  isCorresponding: boolean;
-  author: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
-};
 
-type ArticleEditorDTO = {
-  id: string;
-  name: string | null;
-  email: string;
-} | null;
 
-type ArticleIssueDTO = {
-  id: string;
-  issueNumber: number;
-  volumeId?: string;
-} | null;
-
-type ArticlePaymentDTO = {
-  status: string;
-  amount?: number;
-  currency?: string;
-} | null;
-
-export type ArticleCardProps = {
-  article: {
-    id: string;
-    title: string;
-    status: string;
-    createdAt: string | Date;
-    coverImage?: string | null;
-    keywords?: string | null;
-    authors?: ArticleAuthorDTO[];
-
-    // Optional extras – only shown for logged-in users
-    editor?: ArticleEditorDTO;
-    issue?: ArticleIssueDTO;
-    payment?: ArticlePaymentDTO;
-  };
-};
-
-export default function AutherArticleCard({ article }: ArticleCardProps) {
+export default function AutherArticleCard({ article }: { article: ArticleDetailDTO }) {
   const { session } = useSession();
   const isLoggedIn = !!session?.user;
   const currentUserEmail = session?.user?.email?.toLowerCase() ?? null;
 
   const created = new Date(article.createdAt).toLocaleDateString();
+  const updated = article.updatedAt
+    ? new Date(article.updatedAt).toLocaleDateString()
+    : "";
 
   const statusVariant =
     article.status === "PUBLISHED"
@@ -127,7 +88,7 @@ export default function AutherArticleCard({ article }: ArticleCardProps) {
 
             {/* Basic info (always visible) */}
             <p className="text-sm text-muted-foreground">
-              Submitted on {created}
+              Submitted on {created} . <span>Last updated: {updated}</span>
             </p>
 
             {authorsLine && (

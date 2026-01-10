@@ -10,7 +10,7 @@ import {
   ArticleDetailDTO,
   ArticleListItemDTO,
   PaginationQueryDTO,
-  PaginationMetaDTO, // 👈 add this
+  PaginationMetaDTO,
   UserLookupDTO,
 } from "@/types/dto";
 import { authClient } from "@/lib/auth-client";
@@ -34,7 +34,6 @@ export const useSession = () => {
 };
 
 /* ---------------- USER ARTICLES ---------------- */
-
 export const useUserArticles = (params?: PaginationQueryDTO) => {
   const page = Math.max(1, params?.page ?? 1);
   const limit = Math.min(100, Math.max(1, params?.limit ?? 20));
@@ -130,11 +129,46 @@ export const useUserArticles = (params?: PaginationQueryDTO) => {
 
   return {
     articles,
-    meta, // 👈 now exposed
+    meta, 
     isLoading,
     submitArticle,
     updateArticle,
     withdrawArticle,
+  };
+};
+
+/* ---------------- SINGLE ARTICLE HOOK ---------------- */
+
+/**
+ * React hook to fetch a single article (uses react-query).
+ * Usage: const { article, isLoading, isError } = useArticleById(id);
+ */
+export const useArticleById = (articleId: string | null | undefined) => {
+  const id = articleId ?? "";
+
+  const query = useQuery<ArticleDetailDTO, Error>({
+    queryKey: ["articleDetail", id],
+    queryFn: async () => {
+      if (!id) throw new Error("Article id is required");
+      const res = await apiGet<ApiResponse<ArticleDetailDTO>>(
+        `/api/articles/${encodeURIComponent(id)}`
+      );
+      if (!res.success) {
+        throw new Error(res.error || "Failed to fetch article");
+      }
+      return res.data;
+    },
+    enabled: Boolean(id),
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return {
+    article: query.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error ?? null,
+    refetch: query.refetch,
   };
 };
 

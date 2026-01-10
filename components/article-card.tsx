@@ -136,6 +136,16 @@ export default function ArticleCard({ article }: ArticleCardProps) {
                 {article.keywords}
               </p>
             )}
+            {article.issue && (
+              <p>
+                <span>
+                  Issue:{" "}
+                  <Badge variant="outline" className="ml-1">
+                    #{article.issue.issueNumber}
+                  </Badge>
+                </span>
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

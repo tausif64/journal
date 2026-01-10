@@ -146,11 +146,16 @@ export type ArticleDetailDTO = {
   coverImage: string | null;
   status: string;
 
-  author: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
+  authors: {
+    id?: string;
+    authorOrder: number;
+    isCorresponding: boolean;
+    author: {
+      id: string;
+      name: string | null;
+      email: string;
+    };
+  }[];
 
   editor?: {
     id: string;
