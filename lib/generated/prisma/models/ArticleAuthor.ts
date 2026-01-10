@@ -13,8 +13,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model ArticleAuthor
- * Join table for Article ↔ User authorship
- * One article can have up to 4 rows (enforce in service).
+ * 
  */
 export type ArticleAuthorModel = runtime.Types.Result.DefaultSelection<Prisma.$ArticleAuthorPayload>
 

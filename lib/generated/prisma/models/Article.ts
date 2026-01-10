@@ -19,8 +19,18 @@ export type ArticleModel = runtime.Types.Result.DefaultSelection<Prisma.$Article
 
 export type AggregateArticle = {
   _count: ArticleCountAggregateOutputType | null
+  _avg: ArticleAvgAggregateOutputType | null
+  _sum: ArticleSumAggregateOutputType | null
   _min: ArticleMinAggregateOutputType | null
   _max: ArticleMaxAggregateOutputType | null
+}
+
+export type ArticleAvgAggregateOutputType = {
+  issueOrder: number | null
+}
+
+export type ArticleSumAggregateOutputType = {
+  issueOrder: number | null
 }
 
 export type ArticleMinAggregateOutputType = {
@@ -33,6 +43,7 @@ export type ArticleMinAggregateOutputType = {
   status: $Enums.ArticleStatus | null
   editorId: string | null
   issueId: string | null
+  issueOrder: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,6 +58,7 @@ export type ArticleMaxAggregateOutputType = {
   status: $Enums.ArticleStatus | null
   editorId: string | null
   issueId: string | null
+  issueOrder: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -61,11 +73,20 @@ export type ArticleCountAggregateOutputType = {
   status: number
   editorId: number
   issueId: number
+  issueOrder: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type ArticleAvgAggregateInputType = {
+  issueOrder?: true
+}
+
+export type ArticleSumAggregateInputType = {
+  issueOrder?: true
+}
 
 export type ArticleMinAggregateInputType = {
   id?: true
@@ -77,6 +98,7 @@ export type ArticleMinAggregateInputType = {
   status?: true
   editorId?: true
   issueId?: true
+  issueOrder?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -91,6 +113,7 @@ export type ArticleMaxAggregateInputType = {
   status?: true
   editorId?: true
   issueId?: true
+  issueOrder?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -105,6 +128,7 @@ export type ArticleCountAggregateInputType = {
   status?: true
   editorId?: true
   issueId?: true
+  issueOrder?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -148,6 +172,18 @@ export type ArticleAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ArticleAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ArticleSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ArticleMinAggregateInputType
@@ -178,6 +214,8 @@ export type ArticleGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: ArticleCountAggregateInputType | true
+  _avg?: ArticleAvgAggregateInputType
+  _sum?: ArticleSumAggregateInputType
   _min?: ArticleMinAggregateInputType
   _max?: ArticleMaxAggregateInputType
 }
@@ -192,9 +230,12 @@ export type ArticleGroupByOutputType = {
   status: $Enums.ArticleStatus
   editorId: string | null
   issueId: string | null
+  issueOrder: number | null
   createdAt: Date
   updatedAt: Date
   _count: ArticleCountAggregateOutputType | null
+  _avg: ArticleAvgAggregateOutputType | null
+  _sum: ArticleSumAggregateOutputType | null
   _min: ArticleMinAggregateOutputType | null
   _max: ArticleMaxAggregateOutputType | null
 }
@@ -227,6 +268,7 @@ export type ArticleWhereInput = {
   status?: Prisma.EnumArticleStatusFilter<"Article"> | $Enums.ArticleStatus
   editorId?: Prisma.StringNullableFilter<"Article"> | string | null
   issueId?: Prisma.StringNullableFilter<"Article"> | string | null
+  issueOrder?: Prisma.IntNullableFilter<"Article"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Article"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Article"> | Date | string
   authors?: Prisma.ArticleAuthorListRelationFilter
@@ -246,6 +288,7 @@ export type ArticleOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   editorId?: Prisma.SortOrderInput | Prisma.SortOrder
   issueId?: Prisma.SortOrderInput | Prisma.SortOrder
+  issueOrder?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   authors?: Prisma.ArticleAuthorOrderByRelationAggregateInput
@@ -269,6 +312,7 @@ export type ArticleWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumArticleStatusFilter<"Article"> | $Enums.ArticleStatus
   editorId?: Prisma.StringNullableFilter<"Article"> | string | null
   issueId?: Prisma.StringNullableFilter<"Article"> | string | null
+  issueOrder?: Prisma.IntNullableFilter<"Article"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Article"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Article"> | Date | string
   authors?: Prisma.ArticleAuthorListRelationFilter
@@ -288,11 +332,14 @@ export type ArticleOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   editorId?: Prisma.SortOrderInput | Prisma.SortOrder
   issueId?: Prisma.SortOrderInput | Prisma.SortOrder
+  issueOrder?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ArticleCountOrderByAggregateInput
+  _avg?: Prisma.ArticleAvgOrderByAggregateInput
   _max?: Prisma.ArticleMaxOrderByAggregateInput
   _min?: Prisma.ArticleMinOrderByAggregateInput
+  _sum?: Prisma.ArticleSumOrderByAggregateInput
 }
 
 export type ArticleScalarWhereWithAggregatesInput = {
@@ -308,6 +355,7 @@ export type ArticleScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumArticleStatusWithAggregatesFilter<"Article"> | $Enums.ArticleStatus
   editorId?: Prisma.StringNullableWithAggregatesFilter<"Article"> | string | null
   issueId?: Prisma.StringNullableWithAggregatesFilter<"Article"> | string | null
+  issueOrder?: Prisma.IntNullableWithAggregatesFilter<"Article"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Article"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Article"> | Date | string
 }
@@ -320,6 +368,7 @@ export type ArticleCreateInput = {
   coverImage?: string | null
   keywords?: string | null
   status?: $Enums.ArticleStatus
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   authors?: Prisma.ArticleAuthorCreateNestedManyWithoutArticleInput
@@ -339,6 +388,7 @@ export type ArticleUncheckedCreateInput = {
   status?: $Enums.ArticleStatus
   editorId?: string | null
   issueId?: string | null
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   authors?: Prisma.ArticleAuthorUncheckedCreateNestedManyWithoutArticleInput
@@ -354,6 +404,7 @@ export type ArticleUpdateInput = {
   coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   authors?: Prisma.ArticleAuthorUpdateManyWithoutArticleNestedInput
@@ -373,6 +424,7 @@ export type ArticleUncheckedUpdateInput = {
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
   editorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   authors?: Prisma.ArticleAuthorUncheckedUpdateManyWithoutArticleNestedInput
@@ -390,6 +442,7 @@ export type ArticleCreateManyInput = {
   status?: $Enums.ArticleStatus
   editorId?: string | null
   issueId?: string | null
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -402,6 +455,7 @@ export type ArticleUpdateManyMutationInput = {
   coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -416,6 +470,7 @@ export type ArticleUncheckedUpdateManyInput = {
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
   editorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -446,8 +501,13 @@ export type ArticleCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   editorId?: Prisma.SortOrder
   issueId?: Prisma.SortOrder
+  issueOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ArticleAvgOrderByAggregateInput = {
+  issueOrder?: Prisma.SortOrder
 }
 
 export type ArticleMaxOrderByAggregateInput = {
@@ -460,6 +520,7 @@ export type ArticleMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   editorId?: Prisma.SortOrder
   issueId?: Prisma.SortOrder
+  issueOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -474,8 +535,13 @@ export type ArticleMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   editorId?: Prisma.SortOrder
   issueId?: Prisma.SortOrder
+  issueOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ArticleSumOrderByAggregateInput = {
+  issueOrder?: Prisma.SortOrder
 }
 
 export type ArticleScalarRelationFilter = {
@@ -527,6 +593,14 @@ export type ArticleUncheckedUpdateManyWithoutEditorNestedInput = {
 
 export type EnumArticleStatusFieldUpdateOperationsInput = {
   set?: $Enums.ArticleStatus
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type ArticleCreateNestedOneWithoutAuthorsInput = {
@@ -621,6 +695,7 @@ export type ArticleCreateWithoutEditorInput = {
   coverImage?: string | null
   keywords?: string | null
   status?: $Enums.ArticleStatus
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   authors?: Prisma.ArticleAuthorCreateNestedManyWithoutArticleInput
@@ -638,6 +713,7 @@ export type ArticleUncheckedCreateWithoutEditorInput = {
   keywords?: string | null
   status?: $Enums.ArticleStatus
   issueId?: string | null
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   authors?: Prisma.ArticleAuthorUncheckedCreateNestedManyWithoutArticleInput
@@ -684,6 +760,7 @@ export type ArticleScalarWhereInput = {
   status?: Prisma.EnumArticleStatusFilter<"Article"> | $Enums.ArticleStatus
   editorId?: Prisma.StringNullableFilter<"Article"> | string | null
   issueId?: Prisma.StringNullableFilter<"Article"> | string | null
+  issueOrder?: Prisma.IntNullableFilter<"Article"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Article"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Article"> | Date | string
 }
@@ -696,6 +773,7 @@ export type ArticleCreateWithoutAuthorsInput = {
   coverImage?: string | null
   keywords?: string | null
   status?: $Enums.ArticleStatus
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   editor?: Prisma.UserCreateNestedOneWithoutAssignedEditsInput
@@ -714,6 +792,7 @@ export type ArticleUncheckedCreateWithoutAuthorsInput = {
   status?: $Enums.ArticleStatus
   editorId?: string | null
   issueId?: string | null
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutArticleInput
@@ -744,6 +823,7 @@ export type ArticleUpdateWithoutAuthorsInput = {
   coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   editor?: Prisma.UserUpdateOneWithoutAssignedEditsNestedInput
@@ -762,6 +842,7 @@ export type ArticleUncheckedUpdateWithoutAuthorsInput = {
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
   editorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutArticleNestedInput
@@ -776,6 +857,7 @@ export type ArticleCreateWithoutPaymentInput = {
   coverImage?: string | null
   keywords?: string | null
   status?: $Enums.ArticleStatus
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   authors?: Prisma.ArticleAuthorCreateNestedManyWithoutArticleInput
@@ -794,6 +876,7 @@ export type ArticleUncheckedCreateWithoutPaymentInput = {
   status?: $Enums.ArticleStatus
   editorId?: string | null
   issueId?: string | null
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   authors?: Prisma.ArticleAuthorUncheckedCreateNestedManyWithoutArticleInput
@@ -824,6 +907,7 @@ export type ArticleUpdateWithoutPaymentInput = {
   coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   authors?: Prisma.ArticleAuthorUpdateManyWithoutArticleNestedInput
@@ -842,6 +926,7 @@ export type ArticleUncheckedUpdateWithoutPaymentInput = {
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
   editorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   authors?: Prisma.ArticleAuthorUncheckedUpdateManyWithoutArticleNestedInput
@@ -856,6 +941,7 @@ export type ArticleCreateWithoutReviewsInput = {
   coverImage?: string | null
   keywords?: string | null
   status?: $Enums.ArticleStatus
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   authors?: Prisma.ArticleAuthorCreateNestedManyWithoutArticleInput
@@ -874,6 +960,7 @@ export type ArticleUncheckedCreateWithoutReviewsInput = {
   status?: $Enums.ArticleStatus
   editorId?: string | null
   issueId?: string | null
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   authors?: Prisma.ArticleAuthorUncheckedCreateNestedManyWithoutArticleInput
@@ -904,6 +991,7 @@ export type ArticleUpdateWithoutReviewsInput = {
   coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   authors?: Prisma.ArticleAuthorUpdateManyWithoutArticleNestedInput
@@ -922,6 +1010,7 @@ export type ArticleUncheckedUpdateWithoutReviewsInput = {
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
   editorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   authors?: Prisma.ArticleAuthorUncheckedUpdateManyWithoutArticleNestedInput
@@ -936,6 +1025,7 @@ export type ArticleCreateWithoutIssueInput = {
   coverImage?: string | null
   keywords?: string | null
   status?: $Enums.ArticleStatus
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   authors?: Prisma.ArticleAuthorCreateNestedManyWithoutArticleInput
@@ -953,6 +1043,7 @@ export type ArticleUncheckedCreateWithoutIssueInput = {
   keywords?: string | null
   status?: $Enums.ArticleStatus
   editorId?: string | null
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   authors?: Prisma.ArticleAuthorUncheckedCreateNestedManyWithoutArticleInput
@@ -995,6 +1086,7 @@ export type ArticleCreateManyEditorInput = {
   keywords?: string | null
   status?: $Enums.ArticleStatus
   issueId?: string | null
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1007,6 +1099,7 @@ export type ArticleUpdateWithoutEditorInput = {
   coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   authors?: Prisma.ArticleAuthorUpdateManyWithoutArticleNestedInput
@@ -1024,6 +1117,7 @@ export type ArticleUncheckedUpdateWithoutEditorInput = {
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   authors?: Prisma.ArticleAuthorUncheckedUpdateManyWithoutArticleNestedInput
@@ -1040,6 +1134,7 @@ export type ArticleUncheckedUpdateManyWithoutEditorInput = {
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1053,6 +1148,7 @@ export type ArticleCreateManyIssueInput = {
   keywords?: string | null
   status?: $Enums.ArticleStatus
   editorId?: string | null
+  issueOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1065,6 +1161,7 @@ export type ArticleUpdateWithoutIssueInput = {
   coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   authors?: Prisma.ArticleAuthorUpdateManyWithoutArticleNestedInput
@@ -1082,6 +1179,7 @@ export type ArticleUncheckedUpdateWithoutIssueInput = {
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
   editorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   authors?: Prisma.ArticleAuthorUncheckedUpdateManyWithoutArticleNestedInput
@@ -1098,6 +1196,7 @@ export type ArticleUncheckedUpdateManyWithoutIssueInput = {
   keywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumArticleStatusFieldUpdateOperationsInput | $Enums.ArticleStatus
   editorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issueOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1152,6 +1251,7 @@ export type ArticleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   status?: boolean
   editorId?: boolean
   issueId?: boolean
+  issueOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   authors?: boolean | Prisma.Article$authorsArgs<ExtArgs>
@@ -1174,11 +1274,12 @@ export type ArticleSelectScalar = {
   status?: boolean
   editorId?: boolean
   issueId?: boolean
+  issueOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "abstract" | "fileUrl" | "coverImage" | "keywords" | "status" | "editorId" | "issueId" | "createdAt" | "updatedAt", ExtArgs["result"]["article"]>
+export type ArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "abstract" | "fileUrl" | "coverImage" | "keywords" | "status" | "editorId" | "issueId" | "issueOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["article"]>
 export type ArticleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   authors?: boolean | Prisma.Article$authorsArgs<ExtArgs>
   editor?: boolean | Prisma.Article$editorArgs<ExtArgs>
@@ -1207,6 +1308,7 @@ export type $ArticlePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     status: $Enums.ArticleStatus
     editorId: string | null
     issueId: string | null
+    issueOrder: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["article"]>
@@ -1592,6 +1694,7 @@ export interface ArticleFieldRefs {
   readonly status: Prisma.FieldRef<"Article", 'ArticleStatus'>
   readonly editorId: Prisma.FieldRef<"Article", 'String'>
   readonly issueId: Prisma.FieldRef<"Article", 'String'>
+  readonly issueOrder: Prisma.FieldRef<"Article", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Article", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Article", 'DateTime'>
 }

@@ -26,7 +26,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
         <AppSidebar variant="inset" />
         <SidebarInset>
           <SiteHeader />
-          <div className="flex flex-1 flex-col px-2">{children}</div>
+          <div className="flex flex-1 flex-col p-2">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </>

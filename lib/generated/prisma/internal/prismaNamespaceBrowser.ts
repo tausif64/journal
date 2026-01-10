@@ -159,6 +159,7 @@ export const ArticleScalarFieldEnum = {
   status: 'status',
   editorId: 'editorId',
   issueId: 'issueId',
+  issueOrder: 'issueOrder',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

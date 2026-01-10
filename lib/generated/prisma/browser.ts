@@ -48,8 +48,7 @@ export type Journal = Prisma.JournalModel
 export type Article = Prisma.ArticleModel
 /**
  * Model ArticleAuthor
- * Join table for Article ↔ User authorship
- * One article can have up to 4 rows (enforce in service).
+ * 
  */
 export type ArticleAuthor = Prisma.ArticleAuthorModel
 /**

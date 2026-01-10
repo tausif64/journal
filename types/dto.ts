@@ -3,9 +3,7 @@
 /**
  * Generic pagination DTO
  */
-import { Session, User } from '@/lib/generated/prisma/client';
-
-
+import { Session, User } from "@/lib/generated/prisma/client";
 
 /**
  * ===== User DTOs =====
@@ -14,14 +12,24 @@ export enum Role {
   AUTHOR = "AUTHOR",
   REVIEWER = "REVIEWER",
   EDITOR = "EDITOR",
-  ADMIN = "ADMIN"
+  ADMIN = "ADMIN",
 }
 
 export enum Gender {
   Male = "Male",
   Female = "Female",
-  OTHER = "OTHER"
+  OTHER = "OTHER",
 }
+
+export enum ArticleStatus {
+  SUBMITTED = "SUBMITTED",
+  UNDER_REVIEW = "UNDER_REVIEW",
+  REVISION = "REVISION",
+  ACCEPTED = "ACCEPTED",
+  REJECTED = "REJECTED",
+  PUBLISHED = "PUBLISHED",
+}
+
 
 export type UserUpdateProfileDTO = {
   name?: string | null;
@@ -38,9 +46,9 @@ export type UserLookupDTO = {
 };
 
 export type ApiSessionResponse = {
-  session: Session,
-  user: User
-}
+  session: Session;
+  user: User;
+};
 
 /**
  * Admin-only actions
@@ -95,7 +103,6 @@ export type AdminChangeRoleResponseDTO = {
   role: Role;
 };
 
-
 /**
  * ===== Article DTOs =====
  */
@@ -107,14 +114,13 @@ export type ArticleCreateDTO = {
   coverImage?: string | null;
 
   authors: {
-    email: string;            // search by registered email
-    fullName?: string;        // optional: just for display on client
-    designation?: string;     // optional
-    affiliation?: string;     // college / university / address
-    phone?: string;           // optional
+    email: string; // search by registered email
+    fullName?: string; // optional: just for display on client
+    designation?: string; // optional
+    affiliation?: string; // college / university / address
+    phone?: string; // optional
   }[];
 };
-
 
 export type ArticleListItemDTO = {
   id: string;
@@ -135,7 +141,6 @@ export type ArticleListItemDTO = {
     };
   }[];
 };
-
 
 export type ArticleDetailDTO = {
   id: string;
@@ -240,6 +245,47 @@ export type IssueCreateDTO = {
 };
 
 /**
+ * ===== Admin Dashboard DTOs =====
+ */
+export type AdminDashboardStatsDTO = {
+  totalUsers: number;
+  totalArticles: number;
+  totalVolumes: number;
+  totalIssues: number;
+
+  articlesByStatus: {
+    SUBMITTED: number;
+    UNDER_REVIEW: number;
+    REVISION: number;
+    ACCEPTED: number;
+    REJECTED: number;
+    PUBLISHED: number;
+  };
+};
+
+
+export type AdminArticleListItemDTO = {
+  id: string;
+  title: string;
+  status: ArticleStatus;
+  createdAt: Date | string;
+
+  editor?: {
+    id: string;
+    name: string | null;
+  } | null;
+
+  issue?: {
+    id: string;
+    issueNumber: number;
+    volumeNumber: number;
+  } | null;
+};
+
+
+
+
+/**
  * ===== API Response DTOs =====
  */
 
@@ -265,5 +311,3 @@ export type ApiErrorResponse = {
 };
 
 export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
-
-
