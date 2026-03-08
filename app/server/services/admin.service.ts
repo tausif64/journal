@@ -13,7 +13,7 @@ import { PermissionError } from "@/lib/errors";
 export const adminService = {
   createJournal: async (
     actor: { role: string },
-    payload: { name: string; issn: string }
+    payload: { name: string; issn: string; status?: "ACTIVE" | "INACTIVE" }
   ) => {
     if (actor.role !== "ADMIN")
       throw new PermissionError("Only admins can create journals");

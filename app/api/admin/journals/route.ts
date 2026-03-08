@@ -28,6 +28,7 @@ export async function POST(req: Request) {
   const body = (await req.json()) as {
     name?: string;
     issn?: string;
+    status?: "ACTIVE" | "INACTIVE";
   };
 
   const name = body.name?.trim();
@@ -41,9 +42,16 @@ export async function POST(req: Request) {
   }
 
   try {
+    if (body.status && !["ACTIVE", "INACTIVE"].includes(body.status)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid journal status" },
+        { status: 400 }
+      );
+    }
+
     const created = await adminService.createJournal(
       { role: guard.actor.role },
-      { name, issn }
+      { name, issn, status: body.status ?? "ACTIVE" }
     );
     return NextResponse.json({ success: true, data: created }, { status: 201 });
   } catch (error) {

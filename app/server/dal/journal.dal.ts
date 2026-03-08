@@ -2,7 +2,7 @@
 import { prisma } from "@/lib/prisma";
 
 export const journalDAL = {
-  create: async (data: { name: string; issn: string }) => {
+  create: async (data: { name: string; issn: string; status?: "ACTIVE" | "INACTIVE" }) => {
     return prisma.journal.create({ data });
   },
 
@@ -23,7 +23,10 @@ export const journalDAL = {
     return prisma.journal.findMany({ take, skip, orderBy: { name: "asc" } });
   },
 
-  update: async (id: string, data: { name?: string; issn?: string }) => {
+  update: async (
+    id: string,
+    data: { name?: string; issn?: string; status?: "ACTIVE" | "INACTIVE" }
+  ) => {
     return prisma.journal.update({ where: { id }, data });
   },
 };

@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGet, apiPost, apiPut } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -41,6 +47,7 @@ type Journal = {
   id: string;
   name: string;
   issn: string;
+  status: "ACTIVE" | "INACTIVE";
 };
 
 type VolumeRow = {
@@ -62,8 +69,15 @@ export default function AdminIssueVolumePage() {
 
   const [journalName, setJournalName] = useState("");
   const [journalIssn, setJournalIssn] = useState("");
+  const [journalStatus, setJournalStatus] = useState<"ACTIVE" | "INACTIVE">(
+    "ACTIVE"
+  );
   const [volumeJournalId, setVolumeJournalId] = useState("");
   const [volumeDate, setVolumeDate] = useState("");
+  const [editJournal, setEditJournal] = useState<Journal | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editIssn, setEditIssn] = useState("");
+  const [editStatus, setEditStatus] = useState<"ACTIVE" | "INACTIVE">("ACTIVE");
 
   const journalsQuery = useQuery<Journal[]>({
     queryKey: ["admin-journals"],
@@ -110,18 +124,52 @@ export default function AdminIssueVolumePage() {
 
   const createJournal = useMutation({
     mutationFn: () =>
-      apiPost<ApiResponse<Journal>, { name: string; issn: string }>(
+      apiPost<
+        ApiResponse<Journal>,
+        { name: string; issn: string; status: "ACTIVE" | "INACTIVE" }
+      >(
         "/api/admin/journals",
-        { name: journalName.trim(), issn: journalIssn.trim() }
+        {
+          name: journalName.trim(),
+          issn: journalIssn.trim(),
+          status: journalStatus,
+        }
       ),
     onSuccess: async () => {
       setJournalName("");
       setJournalIssn("");
+      setJournalStatus("ACTIVE");
       toast.success("Journal created");
       await qc.invalidateQueries({ queryKey: ["admin-journals"] });
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : "Failed to create journal");
+    },
+  });
+
+  const updateJournal = useMutation({
+    mutationFn: () => {
+      if (!editJournal?.id) {
+        throw new Error("No journal selected");
+      }
+      return (
+      apiPut<
+        ApiResponse<Journal>,
+        { name: string; issn: string; status: "ACTIVE" | "INACTIVE" }
+      >(`/api/admin/journals/${editJournal.id}`, {
+        name: editName.trim(),
+        issn: editIssn.trim(),
+        status: editStatus,
+      })
+      );
+    },
+    onSuccess: async () => {
+      toast.success("Journal updated");
+      setEditJournal(null);
+      await qc.invalidateQueries({ queryKey: ["admin-journals"] });
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to update journal");
     },
   });
 
@@ -227,6 +275,23 @@ export default function AdminIssueVolumePage() {
               value={journalIssn}
               onChange={(e) => setJournalIssn(e.target.value)}
             />
+            <p className="text-xs font-medium text-muted-foreground">
+              Status <span className="text-destructive">*</span>
+            </p>
+            <Select
+              value={journalStatus}
+              onValueChange={(value: "ACTIVE" | "INACTIVE") =>
+                setJournalStatus(value)
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ACTIVE">ACTIVE</SelectItem>
+                <SelectItem value="INACTIVE">INACTIVE</SelectItem>
+              </SelectContent>
+            </Select>
             <Button
               className="w-full"
               disabled={
@@ -238,6 +303,44 @@ export default function AdminIssueVolumePage() {
             >
               {createJournal.isPending ? "Creating..." : "Create Journal"}
             </Button>
+
+            <div className="rounded-md border p-3">
+              <p className="mb-2 text-xs font-medium text-muted-foreground">
+                Existing Journals
+              </p>
+              <div className="space-y-2">
+                {(journalsQuery.data ?? []).map((journal) => (
+                  <div
+                    key={journal.id}
+                    className="flex items-center justify-between rounded border p-2"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">{journal.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {journal.issn} • {journal.status}
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditJournal(journal);
+                        setEditName(journal.name);
+                        setEditIssn(journal.issn);
+                        setEditStatus(journal.status);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </div>
+                ))}
+                {(journalsQuery.data ?? []).length === 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    No journals found.
+                  </p>
+                ) : null}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -385,6 +488,53 @@ export default function AdminIssueVolumePage() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog
+        open={Boolean(editJournal)}
+        onOpenChange={(open) => {
+          if (!open) setEditJournal(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Journal</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs font-medium text-muted-foreground">
+              Journal Name <span className="text-destructive">*</span>
+            </p>
+            <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
+            <p className="text-xs font-medium text-muted-foreground">
+              ISSN <span className="text-destructive">*</span>
+            </p>
+            <Input value={editIssn} onChange={(e) => setEditIssn(e.target.value)} />
+            <p className="text-xs font-medium text-muted-foreground">
+              Status <span className="text-destructive">*</span>
+            </p>
+            <Select
+              value={editStatus}
+              onValueChange={(value: "ACTIVE" | "INACTIVE") =>
+                setEditStatus(value)
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ACTIVE">ACTIVE</SelectItem>
+                <SelectItem value="INACTIVE">INACTIVE</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              className="w-full"
+              disabled={updateJournal.isPending || !editName.trim() || !editIssn.trim()}
+              onClick={() => updateJournal.mutate()}
+            >
+              {updateJournal.isPending ? "Updating..." : "Update Journal"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
