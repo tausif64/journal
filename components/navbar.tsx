@@ -100,6 +100,13 @@ const menu: MenuItem[] = [
         icon: <Archive className="size-5 shrink-0" />,
         url: "/publications/issues",
       },
+      {
+        title: "Published Articles",
+        description:
+          "Search and browse all published MACROJ research articles.",
+        icon: <Book className="size-5 shrink-0" />,
+        url: "/publications/articles",
+      },
      
       // {
       //   title: "Books",
