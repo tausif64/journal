@@ -6,6 +6,7 @@ import { PublicationTimeline } from "@/components/publication-timeline";
 import TestimonialCarousel from "@/components/testimonial-carousel";
 import WhyPublish from "@/components/why-publish";
 import { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "MACROJ Research Journal - Multidisciplinary Academic Research",
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
     "education research",
     "technology research",
     "interdisciplinary research",
+    "Tausif Ansari",
   ],
   authors: [{ name: "Marwari College Ranchi" }],
   openGraph: {
@@ -51,7 +53,46 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  const currentDraftIssue = await prisma.issue.findFirst({
+    where: { status: "DRAFT" },
+    include: {
+      volume: {
+        select: {
+          year: true,
+          volumeNumber: true,
+        },
+      },
+    },
+    orderBy: [
+      { volume: { year: "desc" } },
+      { volume: { volumeNumber: "desc" } },
+      { issueNumber: "desc" },
+    ],
+  });
+
+  const fallbackLatestIssue =
+    currentDraftIssue ??
+    (await prisma.issue.findFirst({
+      include: {
+        volume: {
+          select: {
+            year: true,
+            volumeNumber: true,
+          },
+        },
+      },
+      orderBy: [
+        { volume: { year: "desc" } },
+        { volume: { volumeNumber: "desc" } },
+        { issueNumber: "desc" },
+      ],
+    }));
+
+  const currentVolumeIssueText = fallbackLatestIssue
+    ? `Volume ${fallbackLatestIssue.volume.volumeNumber} (${fallbackLatestIssue.volume.year}), Issue ${fallbackLatestIssue.issueNumber}`
+    : null;
+
   return (
     <>
       <Hero />
@@ -65,6 +106,41 @@ export default function Home() {
         }
         image={"/about.jpg"}
       />
+      <section className="bg-slate-50 border-y">
+        <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14">
+          <div className="rounded-xl border bg-white p-6 shadow-sm md:p-8">
+            <p className="text-sm font-semibold tracking-wide text-primary">
+              CALL FOR PAPERS
+            </p>
+            <h2 className="mt-2 text-2xl font-bold text-slate-900 md:text-3xl">
+              We are accepting papers for the current Volume &amp; Issue
+            </h2>
+            {currentVolumeIssueText ? (
+              <p className="mt-2 text-sm font-medium text-slate-800 md:text-base">
+                Currently Open: {currentVolumeIssueText}
+              </p>
+            ) : (
+              <p className="mt-2 text-sm font-medium text-slate-800 md:text-base">
+                Current volume and issue will be announced soon.
+              </p>
+            )}
+            <p className="mt-3 max-w-3xl text-sm text-slate-600 md:text-base">
+              Authors are invited to submit original and unpublished research
+              manuscripts for the ongoing publication cycle. Submit your article
+              now to be considered for peer review in the current volume and
+              issue.
+            </p>
+            <div className="mt-5">
+              <a
+                href="/dashboard/submit"
+                className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
+              >
+                Submit Paper
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
       {/* Publication process */}
       <PublicationTimeline />
 

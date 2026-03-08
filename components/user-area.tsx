@@ -3,31 +3,37 @@
 import { Button } from "./ui/button";
 import { UserDropdown } from "./UserDropdown";
 import { useEffect } from "react";
-import { useUserStore } from "@/store/userStore";
 import { useSession } from "@/hooks/use-user";
+import { usePathname, useRouter } from "next/navigation";
 
 const UserArea = () => {
-  const { session: apiSession, setSession } = useUserStore();
-
   const { session } = useSession();
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
-    if (session) {
-      setSession(session);
-    } else {
-      setSession(null);
-    }
-  }, [session, setSession]);
+    const role = session?.user?.role;
+    if (!role) return;
 
-  return apiSession?.user ? (
+    if (role === "ADMIN" && !pathname.startsWith("/admin")) {
+      router.replace("/admin/dashboard");
+      return;
+    }
+    if (role === "EDITOR" && !pathname.startsWith("/editor")) {
+      router.replace("/editor");
+    }
+  }, [pathname, router, session?.user?.role]);
+
+  return session?.user ? (
     <UserDropdown
-      email={apiSession.user.email}
+      email={session.user.email}
       name={
-        apiSession.user.name && apiSession.user.name.length > 0
-          ? apiSession.user.name
-          : apiSession.user.email.split("@")[0]
+        session.user.name && session.user.name.length > 0
+          ? session.user.name
+          : session.user.email.split("@")[0]
       }
-      image={apiSession.user.image ?? ""}
+      image={session.user.image ?? ""}
+      role={session.user.role}
     />
   ) : (
     <Button asChild className="rounded-full">

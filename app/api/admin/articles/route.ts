@@ -1,16 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-// import { auth } from "@/lib/auth";
-// import { headers } from "next/headers";
+import { requireAdmin } from "../_lib/require-admin";
 
 export async function GET() {
-  //   const session = await auth.api.getSession({
-  //     headers: await headers(),
-  //   });
-
-  //   if (!session || !["ADMIN", "EDITOR"].includes(session.user.role)) {
-  //     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  //   }
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
   const articles = await prisma.article.findMany({
     orderBy: { createdAt: "desc" },

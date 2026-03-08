@@ -3,10 +3,10 @@
 import * as React from "react";
 import {
   IconBook,
-  IconBooks,
   IconDashboard,
   IconFileText,
   IconInnerShadowTop,
+  IconMessage,
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
@@ -41,12 +41,7 @@ export const data = {
       icon: IconFileText,
     },
     {
-      title: "Volumes",
-      url: "/admin/volumes",
-      icon: IconBooks,
-    },
-    {
-      title: "Issues",
+      title: "Volume & Issues",
       url: "/admin/issues",
       icon: IconBook,
     },
@@ -54,6 +49,11 @@ export const data = {
       title: "Users",
       url: "/admin/users",
       icon: IconUsers,
+    },
+    {
+      title: "Testimonials",
+      url: "/admin/testimonials",
+      icon: IconMessage,
     },
     {
       title: "Settings",
@@ -73,7 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
-              <a href="#">
+              <a href="/admin/dashboard">
                 <IconInnerShadowTop className="size-5!" />
                 <span className="text-base font-semibold">MACROJ.</span>
               </a>

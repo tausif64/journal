@@ -88,18 +88,19 @@ const menu: MenuItem[] = [
     title: "Publications",
     url: "#",
     items: [
+       {
+        title: "Journals",
+        description: "Browse our academic journals and explore current issues.",
+        icon: <Library className="size-5 shrink-0" />,
+        url: "/publications/journals",
+      },
       {
         title: "Past Issues",
         description: "Explore previous journal volumes and special issues.",
         icon: <Archive className="size-5 shrink-0" />,
         url: "/publications/issues",
       },
-      {
-        title: "Journals",
-        description: "Browse our academic journals and explore current issues.",
-        icon: <Library className="size-5 shrink-0" />,
-        url: "/publications/journals",
-      },
+     
       // {
       //   title: "Books",
       //   description:

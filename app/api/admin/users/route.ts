@@ -1,59 +1,38 @@
-// app/api/admin/users/route.ts
-import { headers } from "next/headers";
-import { auth } from "../../../../lib/auth";
 import { NextResponse } from "next/server";
 import { adminService } from "../../../server/services/admin.service";
-import { userDAL } from "../../../server/dal/user.dal";
+import { requireAdmin } from "../_lib/require-admin";
 
 export async function GET() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session)
-    return NextResponse.json({ success: false, error: "Unauthorized" });
-
-  // load full user record to get role and other metadata
-  const actor = await userDAL.findById(session.user.id);
-  if (!actor)
-    return NextResponse.json({ success: false, error: "User not found" });
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
   try {
-    const users = await adminService.listUsers(
-      { role: actor.role },
-      { take: 50, skip: 0 }
-    );
-    return NextResponse.json(users);
+    const users = await adminService.listUsers({ role: guard.actor.role }, { take: 50, skip: 0 });
+    return NextResponse.json({ success: true, data: users });
   } catch (err) {
     return NextResponse.json(
-      { success: false, error: err instanceof Error ? err.message : "Unknown error" },
-
+      {
+        success: false,
+        error: err instanceof Error ? err.message : "Unknown error",
+      },
+      { status: 500 }
     );
   }
 }
 
 export async function POST(req: Request) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session)
-    return NextResponse.json({ success: false, error: "Unauthorized" });
-
-  // load full user record to get role and other metadata
-  const actor = await userDAL.findById(session.user.id);
-  if (!actor)
-    return NextResponse.json({ success: false, error: "User not found" });
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ success: false, error: "Invalid JSON" });
-  }
-
-  if (actor.role !== "ADMIN")
-    return NextResponse.json({ success: false, error: "Forbidden" });
+    return NextResponse.json(
+      { success: false, error: "Invalid JSON" },
+      { status: 400 }
+    );
+  } 
 
   const payload = body as Record<string, unknown>;
 
@@ -62,21 +41,29 @@ export async function POST(req: Request) {
     const issn = String(payload.issn || "");
     if (!name || !issn)
       return NextResponse.json(
-        { success: false, error: "Missing name or issn" }
+        { success: false, error: "Missing name or issn" },
+        { status: 400 }
       );
 
     try {
       const journal = await adminService.createJournal(
-        { role: actor.role },
+        { role: guard.actor.role },
         { name, issn }
       );
-      return NextResponse.json({ success: false, data: journal });
+      return NextResponse.json({ success: true, data: journal }, { status: 201 });
     } catch (err) {
       return NextResponse.json(
-        { success: false, error: err instanceof Error ? err.message : "Unknown error" }
+        {
+          success: false,
+          error: err instanceof Error ? err.message : "Unknown error",
+        },
+        { status: 500 }
       );
     }
   }
 
-  return NextResponse.json({ success: false, error: "Invalid action" });
+  return NextResponse.json(
+    { success: false, error: "Invalid action" },
+    { status: 400 }
+  );
 }

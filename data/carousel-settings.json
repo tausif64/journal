@@ -1,0 +1,39 @@
+[
+  {
+    "image": "https://placehold.co/1200x400/FF5733/FFFFFF",
+    "title": "Explore Latest Research Articles",
+    "description": "Stay up-to-date with cutting-edge studies and scholarly publications.",
+    "buttons": [
+      {
+        "label": "View Articles",
+        "link": "#"
+      },
+      {
+        "label": "Submit Your Paper",
+        "link": "#"
+      }
+    ]
+  },
+  {
+    "image": "https://placehold.co/1200x400/33FF57/FFFFFF",
+    "title": "Join Our Research Community",
+    "description": "Collaborate with top researchers from around the globe.",
+    "buttons": [
+      {
+        "label": "Sign Up",
+        "link": "#"
+      }
+    ]
+  },
+  {
+    "image": "https://placehold.co/1200x400/5733FF/FFFFFF",
+    "title": "Discover Open Access Journals",
+    "description": "Access high-quality publications without any subscription barriers.",
+    "buttons": [
+      {
+        "label": "Browse Journals",
+        "link": "#"
+      }
+    ]
+  }
+]

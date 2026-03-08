@@ -24,7 +24,7 @@ export default function SubmitArticlePage() {
         {/* Instructions */}
         <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
           <ul className="list-disc pl-5 space-y-1">
-            <li>Only PDF file links are accepted.</li>
+            <li>Upload the article as a PDF file from your device.</li>
             <li>Make sure your abstract is clear and well structured.</li>
             <li>Keywords help reviewers find suitable reviewers faster.</li>
             <li>Cover images are added later by the admin team.</li>

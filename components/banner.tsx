@@ -25,7 +25,7 @@ const Banner: React.FC = () => {
         </div> */}
       </div>
       <div className="md:flex-1 flex justify-center items-center relative">
-        <Link href="/login">
+        <Link href="/dashboard/submit">
           <Button
             size="lg"
             className="bg-white text-black hover:bg-gray-200 px-8 py-6 text-base font-semibold shadow-md"

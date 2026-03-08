@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -10,10 +11,11 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import Autoplay from "embla-carousel-autoplay";
+import type { CarouselSlide } from "@/lib/carousel-settings";
 
 
 export default function Hero() {
-  const heroSlides = [
+  const fallbackSlides: CarouselSlide[] = [
     {
       image: "https://placehold.co/1200x400/FF5733/FFFFFF",
       title: "Explore Latest Research Articles",
@@ -23,12 +25,16 @@ export default function Hero() {
         { label: "View Articles", link: "#" },
         { label: "Submit Your Paper", link: "#" },
       ],
+      status: "SHOW",
+      sortOrder: 0,
     },
     {
       image: "https://placehold.co/1200x400/33FF57/FFFFFF",
       title: "Join Our Research Community",
       description: "Collaborate with top researchers from around the globe.",
       buttons: [{ label: "Sign Up", link: "#" }],
+      status: "SHOW",
+      sortOrder: 1,
     },
     {
       image: "https://placehold.co/1200x400/5733FF/FFFFFF",
@@ -36,8 +42,37 @@ export default function Hero() {
       description:
         "Access high-quality publications without any subscription barriers.",
       buttons: [{ label: "Browse Journals", link: "#" }],
+      status: "SHOW",
+      sortOrder: 2,
     },
   ];
+  const [heroSlides, setHeroSlides] = useState<CarouselSlide[]>(fallbackSlides);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadSlides = async () => {
+      try {
+        const res = await fetch("/api/public/carousel", {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+        if (!res.ok) return;
+        const json = (await res.json()) as {
+          success?: boolean;
+          data?: CarouselSlide[];
+        };
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setHeroSlides(json.data);
+        }
+      } catch {
+        // keep fallback slides on fetch errors
+      }
+    };
+
+    void loadSlides();
+    return () => controller.abort();
+  }, []);
 
   // const slides = heroSlides;
 

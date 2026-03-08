@@ -19,6 +19,8 @@ import {
   BookOpen,
   ChevronDownIcon,
   LayoutDashboardIcon,
+  MessageSquare,
+  ShieldCheck,
   Newspaper,
 } from "lucide-react";
 import Link from "next/link"
@@ -28,10 +30,17 @@ interface iAppProps {
     name: string;
     email: string;
     image: string;
+    role?: string | null;
 }
 
-export function UserDropdown({name, email, image}:iAppProps) {
+export function UserDropdown({name, email, image, role}:iAppProps) {
     const handleSignOut = useSignOut();
+    const dashboardHref =
+      role === "ADMIN"
+        ? "/admin/dashboard"
+        : role === "EDITOR"
+          ? "/editor"
+          : "/dashboard";
 
     return (
       <DropdownMenu>
@@ -62,13 +71,19 @@ export function UserDropdown({name, email, image}:iAppProps) {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href="/dashboard">
+              <Link href={dashboardHref}>
                 <LayoutDashboardIcon
                   size={16}
                   className="opacity-60"
                   aria-hidden="true"
                 />
-                <span>Dashboard</span>
+                <span>
+                  {role === "ADMIN"
+                    ? "Admin Dashboard"
+                    : role === "EDITOR"
+                      ? "Editor Area"
+                      : "Dashboard"}
+                </span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
@@ -83,6 +98,24 @@ export function UserDropdown({name, email, image}:iAppProps) {
                 <span>Submit New Article</span>
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/testimonials">
+                <MessageSquare
+                  size={16}
+                  className="opacity-60"
+                  aria-hidden="true"
+                />
+                <span>Submit Review</span>
+              </Link>
+            </DropdownMenuItem>
+            {role === "ADMIN" && (
+              <DropdownMenuItem asChild>
+                <Link href="/admin/dashboard">
+                  <ShieldCheck size={16} className="opacity-60" aria-hidden="true" />
+                  <span>Admin Panel</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut}>

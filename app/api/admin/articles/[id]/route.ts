@@ -1,24 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-// import { auth } from "@/lib/auth";
-// import { headers } from "next/headers";
+import { requireAdmin } from "../../_lib/require-admin";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-//   const session = await auth.api.getSession({
-//     headers: await headers(),
-//   });
+  const { id } = await params;
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
-//   if (!session || !["ADMIN", "EDITOR"].includes(session.user.role)) {
-//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//   }
-
-console.log(params);
 
   const article = await prisma.article.findUnique({
-    where: { id: params.id },
+    where: { id: id },
     include: {
       authors: {
         orderBy: { authorOrder: "asc" },

@@ -5,10 +5,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGet } from "@/lib/api";
 import type {
   ArticleCreateDTO,
-  ArticleDetailDTO,
   ApiResponse,
   UserLookupDTO,
 } from "@/types/dto";
@@ -52,8 +51,8 @@ const formSchema = z.object({
     .max(5000, "Abstract is too long"),
   fileUrl: z
     .string()
-    .min(1, "PDF URL is required")
-    .regex(/^https?:\/\/|^\//, "Must be a valid URL or /uploads path"),
+    .min(1, "PDF file is required")
+    .regex(/^\/uploads\/articles\/.+\.pdf$/i, "Upload a PDF file first"),
   keywords: z.string().optional().nullable(),
   // we store the selected author emails here for validation
   authorEmails: z
@@ -78,8 +77,9 @@ export default function SubmitArticleForm() {
   const [authorCount, setAuthorCount] = useState<1 | 2 | 3 | 4>(1);
   const [searchLoading, setSearchLoading] = useState(false);
   const [initializedMainAuthor, setInitializedMainAuthor] = useState(false);
+  const [pdfUploading, setPdfUploading] = useState(false);
 
-  const {submitArticle} = useUserArticles();
+  const { submitArticle } = useUserArticles();
 
   const { data: session } = authClient.useSession();
   const { suggestions, isLoading: suggestionLoading } =
@@ -102,7 +102,9 @@ export default function SubmitArticleForm() {
     formState: { isSubmitting },
     setValue,
     getValues,
+    watch,
   } = form;
+  const uploadedFileUrl = watch("fileUrl");
 
   /* ----------------------------- */
   /* Auto-add main submitting user */
@@ -278,6 +280,42 @@ export default function SubmitArticleForm() {
     }
   }
 
+  async function handlePdfUpload(file: File) {
+    setPdfUploading(true);
+    setMsg(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/articles/user/upload", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      const json = (await res.json()) as {
+        success: boolean;
+        data?: { url: string };
+        error?: string;
+      };
+
+      if (!res.ok || !json.success || !json.data?.url) {
+        throw new Error(json.error ?? "Failed to upload PDF");
+      }
+
+      setValue("fileUrl", json.data.url, { shouldValidate: true });
+      toast.success("PDF uploaded");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "PDF upload failed";
+      setMsg(message);
+      toast.error(message);
+    } finally {
+      setPdfUploading(false);
+    }
+  }
+
   /* ----------------------------- */
   /* Submit handler                */
   /* ----------------------------- */
@@ -377,23 +415,29 @@ export default function SubmitArticleForm() {
           )}
         />
 
-        {/* File URL */}
+        {/* PDF Upload */}
         <FormField
           control={control}
           name="fileUrl"
-          render={({ field }) => (
+          render={() => (
             <FormItem>
-              <FormLabel>PDF File URL</FormLabel>
+              <FormLabel>PDF File</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="https://drive.google.com/... or /uploads/my-paper.pdf"
-                  {...field}
-                />
+                <div className="space-y-2">
+                  <Input
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    disabled={pdfUploading}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      void handlePdfUpload(file);
+                      e.currentTarget.value = "";
+                    }}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
-              <p className="text-xs text-muted-foreground mt-1">
-                Upload your PDF to cloud storage and paste the link here.
-              </p>
             </FormItem>
           )}
         />
@@ -545,7 +589,11 @@ export default function SubmitArticleForm() {
 
         {/* Submit button */}
         <div className="flex justify-end pt-4">
-          <Button type="submit" disabled={isSubmitting} className="px-6">
+          <Button
+            type="submit"
+            disabled={isSubmitting || pdfUploading}
+            className="px-6"
+          >
             {isSubmitting && (
               <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
             )}

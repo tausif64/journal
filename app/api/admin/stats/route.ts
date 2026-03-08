@@ -1,27 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-// import { auth } from "@/lib/auth";
-// import { headers } from "next/headers";
-// import { Role } from "@/lib/generated/prisma/enums";
+import { requireAdmin } from "../_lib/require-admin";
 
 export async function GET() {
   try {
-    // 1️⃣ Get session via better-auth (cookie-based)
-    //    const session = await auth.api.getSession({
-    //      headers: await headers(),
-    //    });
-
-    //     // 2️⃣ Authorization guard
-    //     if (!session) {
-    //       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    //     }
-
-    //     if (session.user.role !== Role.ADMIN) {
-    //       return NextResponse.json(
-    //         { error: "Insufficient permissions" },
-    //         { status: 403 }
-    //       );
-    //     }
+    const guard = await requireAdmin();
+    if (!guard.ok) return guard.response;
 
     const [
       totalUsers,
