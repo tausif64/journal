@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased`}>
-        <Toaster position="top-center" offset="45vh" duration={5000} closeButton />
+        <Toaster position="top-center" offset="45vh" duration={3500} closeButton />
         <Providers>{children}</Providers>
       </body>
     </html>

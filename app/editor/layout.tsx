@@ -3,8 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { userDAL } from "@/app/server/dal/user.dal";
-import { Navbar } from "@/components/navbar";
-import Footer from "@/components/footer";
+import { EditorShell } from "@/components/editor/editor-shell";
 
 export const metadata: Metadata = {
   title: "Editor Area",
@@ -17,18 +16,12 @@ export default async function EditorLayout({
   children: React.ReactNode;
 }) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) return redirect("/login");
+  if (!session) return redirect("/editor-auth/login");
 
   const actor = await userDAL.findById(session.user.id);
-  if (!actor) return redirect("/login");
+  if (!actor) return redirect("/editor-auth/login");
   if (actor.role === "ADMIN") return redirect("/admin/dashboard");
   if (actor.role !== "EDITOR") return redirect("/dashboard");
 
-  return (
-    <>
-      <Navbar />
-      {children}
-      <Footer />
-    </>
-  );
+  return <EditorShell>{children}</EditorShell>;
 }

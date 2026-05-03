@@ -33,6 +33,11 @@ type VolumeRow = {
   id: string;
   volumeNumber: number;
   year: number;
+  journal: {
+    id: string;
+    name: string;
+    issn: string;
+  };
 };
 
 export default function AdminIssueVolumePage() {
@@ -71,16 +76,16 @@ export default function AdminIssueVolumePage() {
   }, [volumeDate]);
 
   const suggestedVolumeNumber = useMemo(() => {
-    if (!Number.isInteger(selectedYear)) return 1;
+    if (!volumeJournalId || !Number.isInteger(selectedYear)) return 1;
     const volsForYear = (volumesQuery.data ?? []).filter(
-      (v) => v.year === selectedYear
+      (v) => v.year === selectedYear && v.journal.id === volumeJournalId
     );
     const maxForYear = volsForYear.reduce(
       (max, v) => Math.max(max, v.volumeNumber),
       0
     );
     return maxForYear + 1;
-  }, [selectedYear, volumesQuery.data]);
+  }, [selectedYear, volumeJournalId, volumesQuery.data]);
 
   const createJournal = useMutation({
     mutationFn: () =>

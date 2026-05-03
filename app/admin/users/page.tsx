@@ -10,7 +10,6 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useAdminUsers, type AdminUserRow } from "@/hooks/useAdminUsers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -24,9 +23,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  useAdminUsers,
+  useChangeUserRole,
+  type AdminUserRole,
+  type AdminUserRow,
+} from "@/hooks/useAdminUsers";
 
 function UserDataTable({ rows }: { rows: AdminUserRow[] }) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const changeRole = useChangeUserRole();
+
   const columns = useMemo<ColumnDef<AdminUserRow>[]>(
     () => [
       {
@@ -51,8 +65,41 @@ function UserDataTable({ rows }: { rows: AdminUserRow[] }) {
         cell: ({ row }) =>
           new Date(row.original.createdAt).toLocaleDateString("en-IN"),
       },
+      {
+        id: "actions",
+        header: "Update Role",
+        cell: ({ row }) => {
+          const currentRole = row.original.role as AdminUserRole;
+          const isUpdating =
+            changeRole.isPending && changeRole.variables?.userId === row.original.id;
+
+          return (
+            <Select
+              value={currentRole}
+              onValueChange={(value) => {
+                if (value === currentRole) return;
+                changeRole.mutate({
+                  userId: row.original.id,
+                  role: value as AdminUserRole,
+                });
+              }}
+              disabled={isUpdating}
+            >
+              <SelectTrigger className="h-9 w-[148px]">
+                <SelectValue placeholder="Select role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="AUTHOR">AUTHOR</SelectItem>
+                <SelectItem value="REVIEWER">REVIEWER</SelectItem>
+                <SelectItem value="EDITOR">EDITOR</SelectItem>
+                <SelectItem value="ADMIN">ADMIN</SelectItem>
+              </SelectContent>
+            </Select>
+          );
+        },
+      },
     ],
-    []
+    [changeRole]
   );
 
   const table = useReactTable({

@@ -1,5 +1,6 @@
 import BackButton from "@/components/back-button"
 import { auth } from "@/lib/auth";
+import { userDAL } from "@/app/server/dal/user.dal";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
@@ -8,8 +9,10 @@ const AuthLayout = async ({ children }: { children: ReactNode }) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  // console.log(session);
   if (session?.user) {
+    const actor = await userDAL.findById(session.user.id);
+    if (actor?.role === "ADMIN") return redirect("/admin/dashboard");
+    if (actor?.role === "EDITOR") return redirect("/editor");
     return redirect("/");
   }
   return (

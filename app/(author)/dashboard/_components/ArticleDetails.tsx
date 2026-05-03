@@ -96,16 +96,14 @@ const ArticleDetails = ({id}:{id:string}) => {
             </div>
           )}
 
-          <div>
+          {/* <div>
             <h3 className="text-sm font-semibold mb-2">Payment</h3>
-
-            {/* PaymentClient chooses UI based on status */}
             <PaymentClient
               articleId={article.id}
               existingPayment={article.payment ?? null}
               articleStatus={article.status}
             />
-          </div>
+          </div> */}
         </CardContent>
       </Card>
 

@@ -59,7 +59,11 @@ export default async function PublishedArticlesPage({ searchParams }: PageProps)
     prisma.article.count({ where }),
     prisma.article.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        abstract: true,
         authors: {
           include: {
             author: {
@@ -149,7 +153,7 @@ export default async function PublishedArticlesPage({ searchParams }: PageProps)
                     <p className="text-xs text-muted-foreground">Issue not assigned</p>
                   )}
                   <Button asChild size="sm">
-                    <Link href={`/article/${article.id}`}>Read Article</Link>
+                    <Link href={`/article/${article.slug}`}>Read Article</Link>
                   </Button>
                 </CardContent>
               </Card>

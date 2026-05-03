@@ -12,6 +12,13 @@ export const articleService = {
     articleDAL.findManyByAuthorUserId(userId, opts),
 
   getArticleById: (id: string) => articleDAL.findById(id),
+  getPublishedArticleBySlug: async (slug: string) => {
+    const article = await articleDAL.findByPublicIdentifier(slug);
+    if (!article || article.status !== "PUBLISHED") {
+      throw new NotFoundError("Article not found");
+    }
+    return article;
+  },
 
   /**
    * Submit a new multi-author article.

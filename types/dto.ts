@@ -124,6 +124,7 @@ export type ArticleCreateDTO = {
 
 export type ArticleListItemDTO = {
   id: string;
+  slug?: string;
   title: string;
   status: string;
   createdAt: Date | string;
@@ -140,10 +141,22 @@ export type ArticleListItemDTO = {
       email: string;
     };
   }[];
+  editor?: {
+    id: string;
+    name: string | null;
+    email?: string;
+  } | null;
+  payment?: PaymentDTO | null;
+  issue?: {
+    id: string;
+    issueNumber: number;
+    volumeId?: string;
+  } | null;
 };
 
 export type ArticleDetailDTO = {
   id: string;
+  slug?: string;
   title: string;
   abstract: string;
   fileUrl: string;

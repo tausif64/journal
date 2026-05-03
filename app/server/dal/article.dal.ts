@@ -1,6 +1,7 @@
 // server/dal/article.dal.ts
 import type { ArticleStatus } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { buildArticleSlug } from "@/lib/slug";
 
 /**
  * Input used only inside DAL for creating ArticleAuthor rows.
@@ -24,10 +25,9 @@ export const articleDAL = {
     coverImage?: string | null;
     authors: CreateArticleAuthorInput[];
   }) => {
-    // console.log(data)
-    // return data;
     const article = await prisma.article.create({
       data: {
+        slug: buildArticleSlug(data.title, crypto.randomUUID().replace(/-/g, "")),
         title: data.title,
         abstract: data.abstract,
         fileUrl: data.fileUrl,
@@ -42,6 +42,14 @@ export const articleDAL = {
         },
       },
     });
+
+    const nextSlug = buildArticleSlug(article.title, article.id);
+    if (article.slug !== nextSlug) {
+      return prisma.article.update({
+        where: { id: article.id },
+        data: { slug: nextSlug },
+      });
+    }
 
     return article;
   },
@@ -73,6 +81,44 @@ export const articleDAL = {
         issue: true,
       },
     });
+  },
+
+  findBySlug: async (slug: string) => {
+    return prisma.article.findUnique({
+      where: { slug },
+      include: {
+        authors: {
+          include: {
+            author: { select: { id: true, name: true, email: true } },
+          },
+          orderBy: { authorOrder: "asc" },
+        },
+        editor: { select: { id: true, name: true, email: true } },
+        reviews: true,
+        payment: true,
+        issue: {
+          include: {
+            volume: {
+              select: {
+                id: true,
+                volumeNumber: true,
+                year: true,
+                journal: { select: { id: true, name: true, issn: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+  },
+
+  findByPublicIdentifier: async (identifier: string) => {
+    const bySlug = await articleDAL.findBySlug(identifier);
+    if (bySlug) {
+      return bySlug;
+    }
+
+    return articleDAL.findById(identifier);
   },
 
   /**
@@ -154,11 +200,24 @@ export const articleDAL = {
       fileUrl: string;
       keywords: string | null;
       coverImage: string | null;
+      slug: string;
     }>
   ) => {
+    const nextData = { ...data };
+    if (data.title && data.title.trim().length > 0) {
+      const current = await prisma.article.findUnique({
+        where: { id },
+        select: { id: true },
+      });
+
+      if (current) {
+        nextData.slug = buildArticleSlug(data.title, current.id);
+      }
+    }
+
     return prisma.article.update({
       where: { id },
-      data,
+      data: nextData,
     });
   },
 

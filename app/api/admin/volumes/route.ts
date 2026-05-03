@@ -64,7 +64,7 @@ export async function POST(req: Request) {
 
   try {
     const lastVolumeForYear = await prisma.volume.findFirst({
-      where: { year },
+      where: { year, journalId },
       orderBy: { volumeNumber: "desc" },
       select: { volumeNumber: true },
     });
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           success: false,
-          error: `For year ${year}, next volume must be ${expectedVolumeNumber}`,
+          error: `For the selected journal in year ${year}, next volume must be ${expectedVolumeNumber}`,
         },
         { status: 400 }
       );

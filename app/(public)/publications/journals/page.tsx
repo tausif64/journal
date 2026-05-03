@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { BookOpen, Calendar, FileText } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import Banner from "@/components/banner";
 
 export const metadata: Metadata = {
   title: "Academic Journals - MACROJ Research Journal",
@@ -47,7 +48,7 @@ export default async function JournalsPage() {
       },
     },
     orderBy: { createdAt: "desc" },
-    take: 9,
+    take: 6,
   });
 
   return (
@@ -66,14 +67,17 @@ export default async function JournalsPage() {
       */}
 
       <section className="mx-auto max-w-6xl px-6 py-12">
-        <h2 className="mb-6 text-center text-3xl font-semibold">Current Journal</h2>
+        <h2 className="mb-6 text-center text-3xl font-semibold">
+          Current Journal
+        </h2>
         {currentIssue ? (
           <Card className="mx-auto max-w-4xl rounded-none border-slate-200">
             <CardContent className="space-y-3 p-6 text-center">
               <BookOpen className="mx-auto h-10 w-10" />
               <h3 className="text-xl font-semibold">
                 {currentIssue.volume.journal.name} - Volume{" "}
-                {currentIssue.volume.volumeNumber}, Issue {currentIssue.issueNumber}
+                {currentIssue.volume.volumeNumber}, Issue{" "}
+                {currentIssue.issueNumber}
               </h3>
               <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4 text-sky-600" />
@@ -82,9 +86,12 @@ export default async function JournalsPage() {
                 </span>
               </div>
               <div className="flex flex-wrap justify-center gap-3 pt-2">
-                <Badge variant="outline">ISSN: {currentIssue.volume.journal.issn}</Badge>
                 <Badge variant="outline">
-                  Published: {new Date(currentIssue.createdAt).toLocaleDateString("en-IN")}
+                  ISSN: {currentIssue.volume.journal.issn}
+                </Badge>
+                <Badge variant="outline">
+                  Published:{" "}
+                  {new Date(currentIssue.createdAt).toLocaleDateString("en-IN")}
                 </Badge>
               </div>
             </CardContent>
@@ -98,10 +105,12 @@ export default async function JournalsPage() {
         )}
       </section>
 
-      <Separator className="my-8" />
+      <Separator />
 
       <section className="mx-auto max-w-6xl px-6 py-12">
-        <h2 className="mb-8 text-center text-3xl font-semibold">Recent Journals</h2>
+        <h2 className="mb-8 text-center text-3xl font-semibold">
+          Recent Journals
+        </h2>
         {recentIssues.length > 0 ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {recentIssues.map((issue) => (
@@ -135,13 +144,7 @@ export default async function JournalsPage() {
         )}
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-14">
-        <div className="flex justify-center">
-          <Button asChild>
-            <Link href="/dashboard/submit">Submit Paper</Link>
-          </Button>
-        </div>
-      </section>
+      <Banner />
     </>
   );
 }

@@ -8,71 +8,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  AUTHOR
-  REVIEWER
-  EDITOR
-  ADMIN
-}
-
-enum ArticleStatus {
-  SUBMITTED
-  UNDER_REVIEW
-  REVISION
-  ACCEPTED
-  REJECTED
-  PUBLISHED
-}
-
-enum IssueStatus {
-  DRAFT
-  PUBLISHED
-}
-
-enum Gender {
-  Male
-  Female
-  OTHER
-}
-
 model User {
-  id            String   @id
-  name          String   @db.Text
-  email         String
-  emailVerified Boolean  @default(false)
-  role          Role     @default(AUTHOR)
+  id            String          @id
+  name          String          @db.Text
+  email         String          @unique
+  emailVerified Boolean         @default(false)
+  role          Role            @default(AUTHOR)
   gender        Gender?
   phone         String
-  image         String?  @db.Text
-  address       String?  @db.Text
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now()) @updatedAt
+  image         String?         @db.Text
+  address       String?         @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now()) @updatedAt
+  accounts      Account[]
+  article       article[]
+  articleauthor articleauthor[]
+  review        review[]
+  sessions      Session[]
+  testimonial   testimonial[]
 
-  // Relations
-  articleAuthorships ArticleAuthor[] @relation("UserAuthors")
-  assignedEdits      Article[]       @relation("EditorAssignments")
-  reviews            Review[]        @relation("ReviewerReviews")
-  sessions           Session[]
-  accounts           Account[]
-
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?  @db.Text
-  userAgent String?  @db.Text
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id
+  expiresAt      DateTime
+  token          String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?  @db.Text
+  userAgent      String?  @db.Text
+  userId         String
+  impersonatedBy String?  @db.Text
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  impersonatedBy String? @db.Text
-
-  @@unique([token])
+  @@index([userId])
   @@map("session")
 }
 
@@ -81,7 +51,6 @@ model Account {
   accountId             String    @db.Text
   providerId            String    @db.Text
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?   @db.Text
   refreshToken          String?   @db.Text
   idToken               String?   @db.Text
@@ -91,7 +60,9 @@ model Account {
   password              String?   @db.Text
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("account")
 }
 
@@ -108,106 +79,177 @@ model Verification {
 }
 
 model Journal {
-  id      String   @id @default(cuid())
-  name    String
-  issn    String   @unique
-  // Other global journal settings
-  volumes Volume[]
+  id     String        @id @default(cuid())
+  name   String
+  issn   String        @unique
+  status JournalStatus @default(ACTIVE)
+  volume volume[]
 
   @@map("journal")
 }
 
-model Article {
-  id         String        @id @default(cuid())
-  title      String
-  abstract   String
-  fileUrl    String // path like "/uploads/articles/12345.pdf"
-  coverImage String? // optional image path
-  keywords   String? // Comma-separated keywords
-  status     ArticleStatus @default(SUBMITTED)
+model article {
+  id            String          @id
+  title         String
+  abstract      String
+  fileUrl       String
+  coverImage    String?
+  keywords      String?
+  status        article_status  @default(SUBMITTED)
+  editorId      String?
+  issueId       String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  issueOrder    Int?
+  slug          String?         @unique(map: "Article_slug_key")
+  user          User?           @relation(fields: [editorId], references: [id], map: "Article_editorId_fkey")
+  issue         issue?          @relation(fields: [issueId], references: [id], map: "Article_issueId_fkey")
+  articleauthor articleauthor[]
+  payment       payment?
+  review        review[]
 
-  authors ArticleAuthor[] @relation("ArticleAuthors")
-
-  editor   User?   @relation("EditorAssignments", fields: [editorId], references: [id])
-  editorId String?
-
-  issue   Issue?  @relation(fields: [issueId], references: [id])
-  issueId String?
-  issueOrder Int?
-
-  payment   Payment?
-  reviews   Review[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@index([editorId], map: "Article_editorId_fkey")
+  @@index([issueId], map: "Article_issueId_fkey")
 }
 
-model ArticleAuthor {
-  id String @id @default(cuid())
-
-  article   Article @relation("ArticleAuthors", fields: [articleId], references: [id], onDelete: Cascade)
-  articleId String
-
-  author   User   @relation("UserAuthors", fields: [authorId], references: [id], onDelete: Cascade)
-  authorId String
-
-  /// 1 = first author, 2 = second, etc.
+model articleauthor {
+  id              String   @id
+  articleId       String
+  authorId        String
   authorOrder     Int
-  isCorresponding Boolean @default(false)
+  isCorresponding Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+  article         article  @relation(fields: [articleId], references: [id], onDelete: Cascade, map: "ArticleAuthor_articleId_fkey")
+  user            User     @relation(fields: [authorId], references: [id], onDelete: Cascade, map: "ArticleAuthor_authorId_fkey")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([articleId, authorId]) // same user can't be added twice
-  @@unique([articleId, authorOrder]) // order per article must be unique
-  @@index([authorId])
-  @@index([articleId])
+  @@unique([articleId, authorId], map: "ArticleAuthor_articleId_authorId_key")
+  @@unique([articleId, authorOrder], map: "ArticleAuthor_articleId_authorOrder_key")
+  @@index([articleId], map: "ArticleAuthor_articleId_idx")
+  @@index([authorId], map: "ArticleAuthor_authorId_idx")
 }
 
-model Payment {
-  id              String   @id @default(cuid())
-  articleId       String   @unique
-  article         Article  @relation(fields: [articleId], references: [id])
+model carouselslide {
+  id          String               @id
+  image       String
+  title       String
+  description String
+  buttons     String               @db.LongText
+  status      carouselslide_status @default(DRAFT)
+  sortOrder   Int                  @default(0)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime
+}
+
+model issue {
+  id              String       @id
+  issueNumber     Int
+  publicationDate DateTime?
+  status          issue_status @default(DRAFT)
+  coverImage      String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime
+  volumeId        String
+  article         article[]
+  volume          volume       @relation(fields: [volumeId], references: [id], map: "Issue_volumeId_fkey")
+
+  @@unique([volumeId, issueNumber], map: "Issue_volumeId_issueNumber_key")
+}
+
+model payment {
+  id              String   @id
+  articleId       String   @unique(map: "Payment_articleId_key")
   razorpayOrderId String
   amount          Float
   currency        String
-  status          String // e.g., "created", "paid", "failed"
+  status          String
   createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime
+  article         article  @relation(fields: [articleId], references: [id], map: "Payment_articleId_fkey")
 }
 
-model Review {
-  id             String   @id @default(cuid())
-  article        Article  @relation(fields: [articleId], references: [id])
+model review {
+  id             String   @id
   articleId      String
-  reviewer       User     @relation("ReviewerReviews", fields: [reviewerId], references: [id])
   reviewerId     String
   comments       String
   recommendation String
   createdAt      DateTime @default(now())
+  article        article  @relation(fields: [articleId], references: [id], map: "Review_articleId_fkey")
+  user           User     @relation(fields: [reviewerId], references: [id], map: "Review_reviewerId_fkey")
+
+  @@index([articleId], map: "Review_articleId_fkey")
+  @@index([reviewerId], map: "Review_reviewerId_fkey")
 }
 
-model Volume {
-  id           String  @id @default(cuid())
-  volumeNumber Int     @unique
+model testimonial {
+  id          String             @id
+  quote       String             @db.Text
+  designation String?
+  imageUrl    String?            @db.Text
+  status      testimonial_status @default(PENDING)
+  approvedAt  DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime
+  userId      String
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Testimonial_userId_fkey")
+
+  @@index([status, createdAt], map: "Testimonial_status_createdAt_idx")
+  @@index([userId], map: "Testimonial_userId_fkey")
+}
+
+model volume {
+  id           String  @id
+  volumeNumber Int
   year         Int
   coverImage   String?
-  journal      Journal @relation(fields: [journalId], references: [id])
   journalId    String
-  issues       Issue[]
+  issue        issue[]
+  journal      Journal @relation(fields: [journalId], references: [id], map: "Volume_journalId_fkey")
+
+  @@unique([journalId, year, volumeNumber], map: "Volume_journalId_year_volumeNumber_key")
 }
 
-model Issue {
-  id              String      @id @default(cuid())
-  issueNumber     Int
-  publicationDate DateTime?
-  status          IssueStatus @default(DRAFT)
-  coverImage      String?
-  articles        Article[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+enum Role {
+  AUTHOR
+  REVIEWER
+  EDITOR
+  ADMIN
+}
 
-  volume   Volume @relation(fields: [volumeId], references: [id])
-  volumeId String
+enum JournalStatus {
+  ACTIVE
+  INACTIVE
+}
 
-  @@unique([volumeId, issueNumber])
+enum Gender {
+  Male
+  Female
+  OTHER
+}
+
+enum issue_status {
+  DRAFT
+  PUBLISHED
+}
+
+enum testimonial_status {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum carouselslide_status {
+  DRAFT
+  HIDE
+  SHOW
+}
+
+enum article_status {
+  SUBMITTED
+  UNDER_REVIEW
+  REVISION
+  ACCEPTED
+  REJECTED
+  PUBLISHED
 }

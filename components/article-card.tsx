@@ -38,6 +38,7 @@ type ArticlePaymentDTO = {
 export type ArticleCardProps = {
   article: {
     id: string;
+    slug?: string;
     title: string;
     status: string;
     createdAt: string | Date;
@@ -87,7 +88,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
       : null;
 
   return (
-    <Link href={`/article/${article.id}`}>
+    <Link href={`/article/${article.slug ?? article.id}`}>
       <Card className="hover:shadow-lg transition-shadow">
         <CardContent className="flex items-start gap-4">
           {/* Avatar / Cover image / Status */}

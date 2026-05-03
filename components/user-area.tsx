@@ -1,30 +1,21 @@
-"use client"
+"use client";
 
 import { Button } from "./ui/button";
 import { UserDropdown } from "./UserDropdown";
-import { useEffect } from "react";
 import { useSession } from "@/hooks/use-user";
-import { usePathname, useRouter } from "next/navigation";
 
 const UserArea = () => {
   const { session } = useSession();
-  const pathname = usePathname();
-  const router = useRouter();
 
-  useEffect(() => {
-    const role = session?.user?.role;
-    if (!role) return;
+  if (!session?.user || session?.user.role !== "AUTHOR") {
+    return (
+      <Button asChild className="rounded-full">
+        <a href="/login">Publish with us</a>
+      </Button>
+    );
+  }
 
-    if (role === "ADMIN" && !pathname.startsWith("/admin")) {
-      router.replace("/admin/dashboard");
-      return;
-    }
-    if (role === "EDITOR" && !pathname.startsWith("/editor")) {
-      router.replace("/editor");
-    }
-  }, [pathname, router, session?.user?.role]);
-
-  return session?.user ? (
+  return (
     <UserDropdown
       email={session.user.email}
       name={
@@ -35,11 +26,7 @@ const UserArea = () => {
       image={session.user.image ?? ""}
       role={session.user.role}
     />
-  ) : (
-    <Button asChild className="rounded-full">
-      <a href="/login">Publish with us</a>
-    </Button>
   );
 };
 
-export default UserArea
+export default UserArea;

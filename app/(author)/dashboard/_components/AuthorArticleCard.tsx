@@ -6,11 +6,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useSession } from "@/hooks/use-user";
 import Link from "next/link";
-import { ArticleDetailDTO } from "@/types/dto";
+import { ArticleDetailDTO, ArticleListItemDTO } from "@/types/dto";
 
 
 
-export default function AutherArticleCard({ article }: { article: ArticleDetailDTO }) {
+export default function AutherArticleCard({
+  article,
+}: {
+  article: ArticleListItemDTO | ArticleDetailDTO;
+}) {
   const { session } = useSession();
   const isLoggedIn = !!session?.user;
   const currentUserEmail = session?.user?.email?.toLowerCase() ?? null;
@@ -119,7 +123,7 @@ export default function AutherArticleCard({ article }: { article: ArticleDetailD
               </p>
             )}
 
-            {showPayment && (
+            {/* {showPayment && (
               <p className="text-xs text-muted-foreground line-clamp-1">
                 <span className="font-medium">Payment:</span>{" "}
                 {article.payment?.status}
@@ -131,7 +135,7 @@ export default function AutherArticleCard({ article }: { article: ArticleDetailD
                     </>
                   )}
               </p>
-            )}
+            )} */}
           </div>
         </CardContent>
       </Card>

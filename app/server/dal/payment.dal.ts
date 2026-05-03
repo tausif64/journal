@@ -35,7 +35,13 @@ export const paymentDAL = {
     const take = Math.min(100, Math.max(1, opts?.take ?? 20));
     const skip = Math.max(0, opts?.skip ?? 0);
     return prisma.payment.findMany({
-      where: { article: { authorId } },
+      where: {
+        article: {
+          authors: {
+            some: { authorId },
+          },
+        },
+      },
       orderBy: { createdAt: "desc" },
       take,
       skip,

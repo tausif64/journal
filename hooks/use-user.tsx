@@ -172,6 +172,35 @@ export const useArticleById = (articleId: string | null | undefined) => {
   };
 };
 
+export const usePublishedArticleBySlug = (articleSlug: string | null | undefined) => {
+  const slug = articleSlug ?? "";
+
+  const query = useQuery<ArticleDetailDTO, Error>({
+    queryKey: ["publishedArticleDetail", slug],
+    queryFn: async () => {
+      if (!slug) throw new Error("Article slug is required");
+      const res = await apiGet<ApiResponse<ArticleDetailDTO>>(
+        `/api/public/articles/${encodeURIComponent(slug)}`
+      );
+      if (!res.success) {
+        throw new Error(res.error || "Failed to fetch article");
+      }
+      return res.data;
+    },
+    enabled: Boolean(slug),
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return {
+    article: query.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error ?? null,
+    refetch: query.refetch,
+  };
+};
+
 /* ---------------- USER SEARCH SUGGESTIONS ---------------- */
 
 export const useUserSearchSuggestions = (rawQuery: string) => {

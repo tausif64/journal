@@ -13,7 +13,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
   });
 
   if (!session) {
-    return redirect("/login");
+    return redirect("/admin-auth/login");
   }
 
   const actor = await userDAL.findById(session.user.id);

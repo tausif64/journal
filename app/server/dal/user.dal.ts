@@ -96,6 +96,17 @@ export const userDAL = {
     });
   },
 
+  banUser: async (
+    _id: string,
+    _opts?: { reason?: string | null; expiresAt?: Date | null }
+  ) => {
+    throw new Error("Ban user is not supported by the current database schema");
+  },
+
+  unbanUser: async (_id: string) => {
+    throw new Error("Unban user is not supported by the current database schema");
+  },
+
   /**
    * Admin-only actions: ban/unban a user or set ban metadata.
    * Service/controller should enforce the caller is an ADMIN.
