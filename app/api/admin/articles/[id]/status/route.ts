@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { ArticleStatus } from "@/lib/generated/prisma/client";
+import { article_status } from "@/lib/generated/prisma/client";
 import { requireAdmin } from "../../../_lib/require-admin";
+
+type ArticleStatusValue = (typeof article_status)[keyof typeof article_status];
 
 export async function PUT(
   req: Request,
@@ -11,10 +13,10 @@ export async function PUT(
   if (!guard.ok) return guard.response;
 
   const { id } = await params;
-  const body = (await req.json()) as { status?: ArticleStatus };
+  const body = (await req.json()) as { status?: ArticleStatusValue };
   const status = body.status;
 
-  if (!status || !Object.values(ArticleStatus).includes(status)) {
+  if (!status || !Object.values(article_status).includes(status)) {
     return NextResponse.json(
       { success: false, error: "Invalid status" },
       { status: 400 }
@@ -44,7 +46,10 @@ export async function PUT(
     );
   }
 
-  if (article.status === ArticleStatus.PUBLISHED && status !== ArticleStatus.PUBLISHED) {
+  if (
+    article.status === article_status.PUBLISHED &&
+    status !== article_status.PUBLISHED
+  ) {
     return NextResponse.json(
       {
         success: false,
@@ -54,7 +59,7 @@ export async function PUT(
     );
   }
 
-  if (status === ArticleStatus.PUBLISHED) {
+  if (status === article_status.PUBLISHED) {
     if (!article.editorId) {
       return NextResponse.json(
         {

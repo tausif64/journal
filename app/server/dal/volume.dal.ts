@@ -1,4 +1,5 @@
 // server/dal/volume.dal.ts
+import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 export const volumeDAL = {
@@ -8,13 +9,18 @@ export const volumeDAL = {
     coverImage?: string | null;
     journalId: string;
   }) => {
-    return prisma.volume.create({ data });
+    return prisma.volume.create({
+      data: {
+        id: randomUUID(),
+        ...data,
+      },
+    });
   },
 
   findById: async (id: string) => {
     return prisma.volume.findUnique({
       where: { id },
-      include: { journal: true, issues: true },
+      include: { journal: true, issue: true },
     });
   },
 
@@ -26,7 +32,7 @@ export const volumeDAL = {
     const skip = Math.max(0, opts?.skip ?? 0);
     return prisma.volume.findMany({
       where: { journalId },
-      include: { issues: true },
+      include: { issue: true },
       orderBy: { volumeNumber: "desc" },
       take,
       skip,

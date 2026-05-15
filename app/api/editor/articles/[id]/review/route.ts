@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { randomUUID } from "node:crypto";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { userDAL } from "@/app/server/dal/user.dal";
@@ -69,6 +70,7 @@ export async function POST(req: Request, { params }: Params) {
       })
     : await prisma.review.create({
         data: {
+          id: randomUUID(),
           articleId,
           reviewerId: actor.id,
           comments,

@@ -8,18 +8,12 @@ export async function GET() {
 
   const articles = await prisma.article.findMany({
     orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      title: true,
-      status: true,
-      createdAt: true,
-      editor: {
+    include: {
+      user: {
         select: { id: true, name: true },
       },
       issue: {
-        select: {
-          id: true,
-          issueNumber: true,
+        include: {
           volume: {
             select: { volumeNumber: true },
           },
@@ -29,15 +23,21 @@ export async function GET() {
   });
 
   return NextResponse.json(
-    articles.map((a) => ({
-      ...a,
-      issue: a.issue
+    articles.map(({ user, issue, ...article }) => ({
+      ...article,
+      editor: user
         ? {
-            id: a.issue.id,
-            issueNumber: a.issue.issueNumber,
-            volumeNumber: a.issue.volume.volumeNumber,
+            id: user.id,
+            name: user.name,
           }
         : null,
-    }))
+      issue: issue
+        ? {
+            id: issue.id,
+            issueNumber: issue.issueNumber,
+            volumeNumber: issue.volume.volumeNumber,
+          }
+        : null,
+    })),
   );
 }

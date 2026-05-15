@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { ArticleStatus } from "@/lib/generated/prisma/enums";
+import { ArticleStatus } from "@/types/dto";
 
 export function ArticleStatusBadge({ status }: { status: ArticleStatus }) {
   const map: Record<ArticleStatus, string> = {

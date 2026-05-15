@@ -111,26 +111,25 @@ export default function AdminIssueVolumePage() {
     },
   });
 
-  const createVolume = useMutation({
-    mutationFn: () =>
-      apiPost<
-        ApiResponse<VolumeRow>,
-        { journalId: string; volumeNumber: number; year: number }
-      >("/api/admin/volumes", {
-        journalId: volumeJournalId,
-        volumeNumber: suggestedVolumeNumber,
-        year: selectedYear,
-      }),
-    onSuccess: async () => {
-      toast.success("Volume created");
-      await qc.invalidateQueries({ queryKey: ["admin-volumes"] });
-    },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to create volume"
-      );
-    },
-  });
+   const createVolume = useMutation({
+     mutationFn: () =>
+       apiPost<
+         ApiResponse<VolumeRow>,
+         { journalId: string; year: number }
+       >("/api/admin/volumes", {
+         journalId: volumeJournalId,
+         year: selectedYear,
+       }),
+     onSuccess: async () => {
+       toast.success("Volume created");
+       await qc.invalidateQueries({ queryKey: ["admin-volumes"] });
+     },
+     onError: (error) => {
+       toast.error(
+         error instanceof Error ? error.message : "Failed to create volume"
+       );
+     },
+   });
 
   return (
     <div className="space-y-6">
@@ -206,49 +205,45 @@ export default function AdminIssueVolumePage() {
           <CardHeader>
             <CardTitle className="text-base">Create Volume</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-xs font-medium text-muted-foreground">
-              Journal <span className="text-destructive">*</span>
-            </p>
-            <Select
-              value={volumeJournalId || undefined}
-              onValueChange={setVolumeJournalId}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select journal" />
-              </SelectTrigger>
-              <SelectContent>
-                {(journalsQuery.data ?? []).map((journal) => (
-                  <SelectItem key={journal.id} value={journal.id}>
-                    {journal.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs font-medium text-muted-foreground">
-              Year <span className="text-destructive">*</span>
-            </p>
-            <Input
-              type="date"
-              value={volumeDate}
-              onChange={(e) => setVolumeDate(e.target.value)}
-            />
-            <p className="text-xs font-medium text-muted-foreground">
-              Next Volume Number <span className="text-destructive">*</span>
-            </p>
-            <Input value={String(suggestedVolumeNumber)} readOnly />
-            <Button
-              className="w-full"
-              disabled={
-                createVolume.isPending ||
-                !volumeJournalId ||
-                !Number.isInteger(selectedYear)
-              }
-              onClick={() => createVolume.mutate()}
-            >
-              {createVolume.isPending ? "Creating..." : "Create Volume"}
-            </Button>
-          </CardContent>
+           <CardContent className="space-y-3">
+             <p className="text-xs font-medium text-muted-foreground">
+               Journal <span className="text-destructive">*</span>
+             </p>
+             <Select
+               value={volumeJournalId || undefined}
+               onValueChange={setVolumeJournalId}
+             >
+               <SelectTrigger>
+                 <SelectValue placeholder="Select journal" />
+               </SelectTrigger>
+               <SelectContent>
+                 {(journalsQuery.data ?? []).map((journal) => (
+                   <SelectItem key={journal.id} value={journal.id}>
+                     {journal.name}
+                   </SelectItem>
+                 ))}
+               </SelectContent>
+             </Select>
+             <p className="text-xs font-medium text-muted-foreground">
+               Year <span className="text-destructive">*</span>
+             </p>
+             <Input
+               type="date"
+               value={volumeDate}
+               onChange={(e) => setVolumeDate(e.target.value)}
+             />
+             <Button
+               className="w-full"
+               disabled={
+                 createVolume.isPending ||
+                 !volumeJournalId ||
+                 !Number.isInteger(selectedYear)
+               }
+               onClick={() => createVolume.mutate()}
+             >
+               {createVolume.isPending ? "Creating..." : "Create Volume"}
+             </Button>
+           </CardContent>
         </Card>
       </div>
     </div>

@@ -24,9 +24,9 @@ export async function GET() {
   const articles = await prisma.article.findMany({
     where: { editorId: actor.id },
     include: {
-      authors: {
+      articleauthor: {
         include: {
-          author: { select: { id: true, name: true, email: true } },
+          user: { select: { id: true, name: true, email: true } },
         },
         orderBy: { authorOrder: "asc" },
       },
@@ -41,5 +41,17 @@ export async function GET() {
     orderBy: { updatedAt: "desc" },
   });
 
-  return NextResponse.json({ success: true, data: articles });
+  return NextResponse.json({
+    success: true,
+    data: articles.map(({ articleauthor, ...article }) => ({
+      ...article,
+      authors: articleauthor.map((author) => ({
+        id: author.id,
+        authorId: author.authorId,
+        authorOrder: author.authorOrder,
+        isCorresponding: author.isCorresponding,
+        author: author.user,
+      })),
+    })),
+  });
 }

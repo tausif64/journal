@@ -110,7 +110,7 @@ export function AssignIssueDialog({ articleId, currentIssue }: Props) {
               </p>
               <Select
                 value={volumeId || undefined}
-                onValueChange={(value) => {
+                onValueChange={(value: string) => {
                   setVolumeId(value);
                   setIssueId("");
                 }}

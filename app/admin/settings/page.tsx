@@ -461,7 +461,7 @@ export default function AdminSettingsPage() {
           <div className="flex flex-wrap gap-2">
             <Select
               value={statusFilter}
-              onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+              onValueChange={(value: string) => setStatusFilter(value as StatusFilter)}
             >
               <SelectTrigger className="w-36">
                 <SelectValue placeholder="Filter status" />
@@ -663,7 +663,7 @@ export default function AdminSettingsPage() {
               </p>
               <Select
                 value={newSlide.status}
-                onValueChange={(value) =>
+                onValueChange={(value: string) =>
                   setNewSlide((prev) => ({
                     ...prev,
                     status: value as CarouselSlide["status"],
@@ -830,7 +830,7 @@ export default function AdminSettingsPage() {
                 </p>
                 <Select
                   value={editingSlide.status}
-                  onValueChange={(value) =>
+                  onValueChange={(value: string) =>
                     updateSlide(editingSlideIndex, {
                       status: value as CarouselSlide["status"],
                     })

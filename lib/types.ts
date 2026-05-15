@@ -1,12 +1,12 @@
 
 import type {
-  Article,
   User,
-  Review,
-  Payment,
-  Volume,
-  Issue,
   Journal,
+  article as Article,
+  issue as Issue,
+  payment as Payment,
+  review as Review,
+  volume as Volume,
 } from "./generated/prisma/client";
 
 export interface Member {

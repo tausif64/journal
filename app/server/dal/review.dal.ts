@@ -1,5 +1,5 @@
 // server/dal/review.dal.ts
-import type { Prisma } from "@/lib/generated/prisma/client";
+import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -15,7 +15,8 @@ export const reviewDAL = {
     comments?: string;
     recommendation?: string;
   }) => {
-    const payload: Prisma.ReviewUncheckedCreateInput = {
+    const payload = {
+      id: randomUUID(),
       articleId: data.articleId,
       reviewerId: data.reviewerId,
       comments: data.comments ?? "",
@@ -25,11 +26,16 @@ export const reviewDAL = {
   },
 
   findByArticle: async (articleId: string) => {
-    return prisma.review.findMany({
+    const reviews = await prisma.review.findMany({
       where: { articleId },
-      include: { reviewer: { select: { id: true, name: true } } },
+      include: { user: { select: { id: true, name: true, email: true } } },
       orderBy: { createdAt: "asc" },
     });
+
+    return reviews.map(({ user, ...review }) => ({
+      ...review,
+      reviewer: user,
+    }));
   },
 
   findAssignedForReviewer: async (
@@ -47,7 +53,10 @@ export const reviewDAL = {
     });
   },
 
-  update: async (id: string, data: Partial<Prisma.ReviewUpdateInput>) => {
+  update: async (
+    id: string,
+    data: Partial<{ comments: string; recommendation: string }>
+  ) => {
     return prisma.review.update({ where: { id }, data });
   },
 };

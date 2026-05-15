@@ -9,16 +9,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ArticleStatus } from "@/lib/generated/prisma/client";
+import { ArticleStatus } from "@/types/dto";
 import { useChangeArticleStatus } from "@/hooks/useChangeArticleStatus";
 
 const STATUSES: ArticleStatus[] = [
-  "SUBMITTED",
-  "UNDER_REVIEW",
-  "REVISION",
-  "ACCEPTED",
-  "REJECTED",
-  "PUBLISHED",
+  ArticleStatus.SUBMITTED,
+  ArticleStatus.UNDER_REVIEW,
+  ArticleStatus.REVISION,
+  ArticleStatus.ACCEPTED,
+  ArticleStatus.REJECTED,
+  ArticleStatus.PUBLISHED,
 ];
 
 export function ChangeStatusDialog({

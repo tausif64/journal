@@ -96,7 +96,7 @@ export default function UserArticles() {
         <h2 className="text-2xl font-bold">Recent Articles</h2>
         <Select
           value={sortBy}
-          onValueChange={(v) => setSortBy(v as SortOption)}
+          onValueChange={(v: string) => setSortBy(v as SortOption)}
         >
           <SelectTrigger className="w-56">
             <SelectValue placeholder="Sort By" />

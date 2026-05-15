@@ -1,5 +1,5 @@
 // server/dal/payment.dal.ts
-import type { Prisma } from "@/lib/generated/prisma/client";
+import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 export const paymentDAL = {
@@ -10,7 +10,8 @@ export const paymentDAL = {
     currency: string;
     status: string;
   }) => {
-    const payload: Prisma.PaymentUncheckedCreateInput = {
+    const payload = {
+      id: randomUUID(),
       articleId: data.articleId,
       razorpayOrderId: data.razorpayOrderId,
       amount: data.amount,
@@ -37,7 +38,7 @@ export const paymentDAL = {
     return prisma.payment.findMany({
       where: {
         article: {
-          authors: {
+          articleauthor: {
             some: { authorId },
           },
         },

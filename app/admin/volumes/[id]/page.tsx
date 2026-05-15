@@ -265,7 +265,7 @@ export default function VolumeDetailPage() {
           return (
             <Select
               value={edit.status}
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 setIssueEdits((prev) => ({
                   ...prev,
                   [row.original.id]: {
@@ -433,7 +433,7 @@ export default function VolumeDetailPage() {
             </p>
           <Select
             value={newIssueStatus}
-            onValueChange={(value) =>
+            onValueChange={(value: string) =>
               setNewIssueStatus(value as "DRAFT" | "PUBLISHED")
             }
           >

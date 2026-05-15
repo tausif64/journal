@@ -1,5 +1,5 @@
 // app/server/services/payment.service.ts
-import type { Prisma } from "../../../lib/generated/prisma/client";
+import { randomUUID } from "node:crypto";
 import { paymentDAL } from "../dal/payment.dal";
 import { articleDAL } from "../dal/article.dal";
 import { prisma } from "../../../lib/prisma";
@@ -28,17 +28,18 @@ export const paymentService = {
     return prisma.$transaction(async (tx) => {
       const payment = await tx.payment.create({
         data: {
+          id: randomUUID(),
           articleId: payload.articleId,
           razorpayOrderId: payload.razorpayOrderId,
           amount: payload.amount,
           currency: payload.currency,
           status: "paid",
-        } as Prisma.PaymentUncheckedCreateInput,
+        },
       });
 
       await tx.article.update({
         where: { id: payload.articleId },
-        data: { status: "ACCEPTED" as Prisma.ArticleUpdateInput["status"] },
+        data: { status: "ACCEPTED" },
       });
 
       return payment;

@@ -19,14 +19,22 @@ export async function GET() {
         },
         _count: {
           select: {
-            issues: true,
+            issue: true,
           },
         },
       },
       orderBy: [{ year: "desc" }, { volumeNumber: "desc" }],
     });
 
-    return NextResponse.json({ success: true, data: volumes });
+    return NextResponse.json({
+      success: true,
+      data: volumes.map((volume) => ({
+        ...volume,
+        _count: {
+          issues: volume._count.issue,
+        },
+      })),
+    });
   } catch (error) {
     return NextResponse.json(
       {

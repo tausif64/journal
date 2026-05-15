@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 export type CarouselButton = {
@@ -61,6 +62,7 @@ function normalizeButtons(value: unknown): CarouselButton[] | null {
     const label = (button as { label: string }).label.trim();
     const link = (button as { link: string }).link.trim();
     if (!label || !link) return null;
+
     buttons.push({ label, link });
   }
 
@@ -108,20 +110,18 @@ export function validateCarouselSlides(slides: unknown): {
       };
     }
 
-    const status = isValidStatus(rawSlide.status) ? rawSlide.status : "DRAFT";
-    const sortOrder =
-      typeof rawSlide.sortOrder === "number" && Number.isFinite(rawSlide.sortOrder)
-        ? rawSlide.sortOrder
-        : i;
-
     normalized.push({
       id: rawSlide.id,
       image,
       title,
       description,
       buttons,
-      status,
-      sortOrder,
+      status: isValidStatus(rawSlide.status) ? rawSlide.status : "DRAFT",
+      sortOrder:
+        typeof rawSlide.sortOrder === "number" &&
+        Number.isFinite(rawSlide.sortOrder)
+          ? rawSlide.sortOrder
+          : i,
     });
   }
 
@@ -129,15 +129,16 @@ export function validateCarouselSlides(slides: unknown): {
 }
 
 async function ensureDefaultSlidesIfEmpty() {
-  const count = await prisma.carouselSlide.count();
+  const count = await prisma.carouselslide.count();
   if (count > 0) return;
 
-  await prisma.carouselSlide.createMany({
+  await prisma.carouselslide.createMany({
     data: defaultCarouselSlides.map((slide, index) => ({
+      id: randomUUID(),
       image: slide.image,
       title: slide.title,
       description: slide.description,
-      buttons: slide.buttons,
+      buttons: JSON.stringify(slide.buttons),
       status: slide.status,
       sortOrder: index,
     })),
@@ -149,16 +150,24 @@ function mapDbSlide(slide: {
   image: string;
   title: string;
   description: string;
-  buttons: unknown;
+  buttons: string;
   status: CarouselSlideStatus;
   sortOrder: number;
 }): CarouselSlide {
+  let parsedButtons: unknown = [];
+
+  try {
+    parsedButtons = JSON.parse(slide.buttons);
+  } catch {
+    parsedButtons = [];
+  }
+
   return {
     id: slide.id,
     image: slide.image,
     title: slide.title,
     description: slide.description,
-    buttons: normalizeButtons(slide.buttons) ?? [],
+    buttons: normalizeButtons(parsedButtons) ?? [],
     status: slide.status,
     sortOrder: slide.sortOrder,
   };
@@ -169,7 +178,7 @@ export async function readCarouselSlides(options?: {
 }): Promise<CarouselSlide[]> {
   await ensureDefaultSlidesIfEmpty();
 
-  const slides = await prisma.carouselSlide.findMany({
+  const slides = await prisma.carouselslide.findMany({
     where: options?.onlyVisible ? { status: "SHOW" } : undefined,
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
   });
@@ -179,13 +188,14 @@ export async function readCarouselSlides(options?: {
 
 export async function writeCarouselSlides(slides: CarouselSlide[]) {
   await prisma.$transaction(async (tx) => {
-    await tx.carouselSlide.deleteMany({});
-    await tx.carouselSlide.createMany({
+    await tx.carouselslide.deleteMany({});
+    await tx.carouselslide.createMany({
       data: slides.map((slide, index) => ({
+        id: slide.id ?? randomUUID(),
         image: slide.image,
         title: slide.title,
         description: slide.description,
-        buttons: slide.buttons,
+        buttons: JSON.stringify(slide.buttons),
         status: slide.status,
         sortOrder: index,
       })),

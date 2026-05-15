@@ -1,4 +1,5 @@
 // server/dal/issue.dal.ts
+import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 export const issueDAL = {
@@ -9,13 +10,18 @@ export const issueDAL = {
     status?: "DRAFT" | "PUBLISHED";
     coverImage?: string | null;
   }) => {
-    return prisma.issue.create({ data });
+    return prisma.issue.create({
+      data: {
+        id: randomUUID(),
+        ...data,
+      },
+    });
   },
 
   findById: async (id: string) => {
     return prisma.issue.findUnique({
       where: { id },
-      include: { articles: true, volume: true },
+      include: { article: true, volume: true },
     });
   },
 
@@ -27,7 +33,7 @@ export const issueDAL = {
     const skip = Math.max(0, opts?.skip ?? 0);
     return prisma.issue.findMany({
       where: { volumeId },
-      include: { articles: true },
+      include: { article: true },
       orderBy: { issueNumber: "asc" },
       take,
       skip,

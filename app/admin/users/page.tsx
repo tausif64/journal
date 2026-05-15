@@ -76,7 +76,7 @@ function UserDataTable({ rows }: { rows: AdminUserRow[] }) {
           return (
             <Select
               value={currentRole}
-              onValueChange={(value) => {
+              onValueChange={(value: string) => {
                 if (value === currentRole) return;
                 changeRole.mutate({
                   userId: row.original.id,

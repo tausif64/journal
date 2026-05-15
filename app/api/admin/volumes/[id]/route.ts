@@ -21,7 +21,7 @@ export async function GET(
           issn: true,
         },
       },
-      issues: {
+      issue: {
         orderBy: { issueNumber: "desc" },
       },
     },
@@ -34,7 +34,13 @@ export async function GET(
     );
   }
 
-  return NextResponse.json({ success: true, data: volume });
+  return NextResponse.json({
+    success: true,
+    data: {
+      ...volume,
+      issues: volume.issue,
+    },
+  });
 }
 
 export async function PUT(
@@ -79,12 +85,20 @@ export async function PUT(
           select: { id: true, name: true, issn: true },
         },
         _count: {
-          select: { issues: true },
+          select: { issue: true },
         },
       },
     });
 
-    return NextResponse.json({ success: true, data: updated });
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...updated,
+        _count: {
+          issues: updated._count.issue,
+        },
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       {

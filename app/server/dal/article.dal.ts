@@ -1,22 +1,101 @@
 // server/dal/article.dal.ts
-import type { ArticleStatus } from "@/lib/generated/prisma/client";
+import { randomUUID } from "node:crypto";
+import type { article_status } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { buildArticleSlug } from "@/lib/slug";
 
-/**
- * Input used only inside DAL for creating ArticleAuthor rows.
- * We only need IDs + ordering + corresponding flag here.
- */
 export type CreateArticleAuthorInput = {
   authorId: string;
   order: number;
   isCorresponding: boolean;
 };
 
+type ArticleAuthorRelation = {
+  id: string;
+  authorId: string;
+  authorOrder: number;
+  isCorresponding: boolean;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+  };
+};
+
+type ArticleReviewRelation = {
+  id: string;
+  articleId: string;
+  reviewerId: string;
+  comments: string;
+  recommendation: string;
+  createdAt: Date;
+  user?: {
+    id: string;
+    name: string | null;
+    email?: string;
+  } | null;
+};
+
+type ArticleEditorRelation =
+  | {
+      id: string;
+      name: string | null;
+      email?: string;
+    }
+  | null
+  | undefined;
+
+type MappableArticle = {
+  articleauthor?: ArticleAuthorRelation[];
+  review?: ArticleReviewRelation[];
+  user?: ArticleEditorRelation;
+  issue?: unknown;
+  payment?: unknown;
+} & Record<string, unknown>;
+
+function mapArticle<T extends MappableArticle>(article: T) {
+  const {
+    articleauthor = [],
+    review = [],
+    user,
+    ...rest
+  } = article;
+
+  return {
+    ...rest,
+    authors: articleauthor.map((author) => ({
+      id: author.id,
+      authorId: author.authorId,
+      authorOrder: author.authorOrder,
+      isCorresponding: author.isCorresponding,
+      author: author.user,
+    })),
+    editor: user ?? null,
+    reviews: review.map((item) => ({
+      ...item,
+      reviewer: item.user ?? null,
+    })),
+  };
+}
+
+const authorInclude = {
+  articleauthor: {
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      authorOrder: "asc" as const,
+    },
+  },
+};
+
 export const articleDAL = {
-  /**
-   * Create a new article with associated ArticleAuthor rows.
-   */
   create: async (data: {
     title: string;
     abstract: string;
@@ -27,17 +106,22 @@ export const articleDAL = {
   }) => {
     const article = await prisma.article.create({
       data: {
-        slug: buildArticleSlug(data.title, crypto.randomUUID().replace(/-/g, "")),
+        id: randomUUID(),
+        slug: buildArticleSlug(
+          data.title,
+          randomUUID().replace(/-/g, ""),
+        ),
         title: data.title,
         abstract: data.abstract,
         fileUrl: data.fileUrl,
         keywords: data.keywords ?? null,
         coverImage: data.coverImage ?? null,
-        authors: {
-          create: data.authors.map((a) => ({
-            authorId: a.authorId,
-            authorOrder: a.order,
-            isCorresponding: a.isCorresponding,
+        articleauthor: {
+          create: data.authors.map((author) => ({
+            id: randomUUID(),
+            authorId: author.authorId,
+            authorOrder: author.order,
+            isCorresponding: author.isCorresponding,
           })),
         },
       },
@@ -54,47 +138,32 @@ export const articleDAL = {
     return article;
   },
 
-  /**
-   * Find a single article by ID, with default includes:
-   * - authors + each author's User (id, name, email)
-   * - editor (id, name, email)
-   * - reviews
-   * - payment
-   * - issue
-   *
-   * If you need a custom include later, you can extend this, but for now
-   * we keep it simple for type safety.
-   */
   findById: async (id: string) => {
-    return prisma.article.findUnique({
+    const article = await prisma.article.findUnique({
       where: { id },
       include: {
-        authors: {
-          include: {
-            author: { select: { id: true, name: true, email: true } },
+        ...authorInclude,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
           },
-          orderBy: { authorOrder: "asc" },
         },
-        editor: { select: { id: true, name: true, email: true } },
-        reviews: true,
-        payment: true,
-        issue: true,
-      },
-    });
-  },
-
-  findBySlug: async (slug: string) => {
-    return prisma.article.findUnique({
-      where: { slug },
-      include: {
-        authors: {
+        review: {
           include: {
-            author: { select: { id: true, name: true, email: true } },
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
           },
-          orderBy: { authorOrder: "asc" },
+          orderBy: {
+            createdAt: "desc",
+          },
         },
-        editor: { select: { id: true, name: true, email: true } },
-        reviews: true,
         payment: true,
         issue: {
           include: {
@@ -103,13 +172,72 @@ export const articleDAL = {
                 id: true,
                 volumeNumber: true,
                 year: true,
-                journal: { select: { id: true, name: true, issn: true } },
+                journal: {
+                  select: {
+                    id: true,
+                    name: true,
+                    issn: true,
+                  },
+                },
               },
             },
           },
         },
       },
     });
+
+    return article ? mapArticle(article) : null;
+  },
+
+  findBySlug: async (slug: string) => {
+    const article = await prisma.article.findUnique({
+      where: { slug },
+      include: {
+        ...authorInclude,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        review: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+        payment: true,
+        issue: {
+          include: {
+            volume: {
+              select: {
+                id: true,
+                volumeNumber: true,
+                year: true,
+                journal: {
+                  select: {
+                    id: true,
+                    name: true,
+                    issn: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return article ? mapArticle(article) : null;
   },
 
   findByPublicIdentifier: async (identifier: string) => {
@@ -121,30 +249,22 @@ export const articleDAL = {
     return articleDAL.findById(identifier);
   },
 
-  /**
-   * "My articles" by userId: all articles where this user is one of the authors.
-   */
   findManyByAuthorUserId: async (
     userId: string,
-    opts?: { take?: number; skip?: number }
+    opts?: { take?: number; skip?: number },
   ) => {
     const take = Math.min(100, Math.max(1, opts?.take ?? 20));
     const skip = Math.max(0, opts?.skip ?? 0);
 
-    return prisma.article.findMany({
+    const articles = await prisma.article.findMany({
       where: {
-        authors: {
+        articleauthor: {
           some: { authorId: userId },
         },
       },
       include: {
-        authors: {
-          include: {
-            author: { select: { id: true, name: true, email: true } },
-          },
-          orderBy: { authorOrder: "asc" },
-        },
-        editor: { select: { id: true, name: true } },
+        ...authorInclude,
+        user: { select: { id: true, name: true, email: true } },
         issue: true,
         payment: true,
       },
@@ -152,34 +272,28 @@ export const articleDAL = {
       take,
       skip,
     });
+
+    return articles.map(mapArticle);
   },
 
-  /**
-   * Optional helper: find articles by an author's email.
-   */
   findManyByAuthorEmail: async (
     email: string,
-    opts?: { take?: number; skip?: number }
+    opts?: { take?: number; skip?: number },
   ) => {
     const take = Math.min(100, Math.max(1, opts?.take ?? 20));
     const skip = Math.max(0, opts?.skip ?? 0);
 
-    return prisma.article.findMany({
+    const articles = await prisma.article.findMany({
       where: {
-        authors: {
+        articleauthor: {
           some: {
-            author: { email },
+            user: { email },
           },
         },
       },
       include: {
-        authors: {
-          include: {
-            author: { select: { id: true, name: true, email: true } },
-          },
-          orderBy: { authorOrder: "asc" },
-        },
-        editor: { select: { id: true, name: true } },
+        ...authorInclude,
+        user: { select: { id: true, name: true, email: true } },
         issue: true,
         payment: true,
       },
@@ -187,11 +301,10 @@ export const articleDAL = {
       take,
       skip,
     });
+
+    return articles.map(mapArticle);
   },
 
-  /**
-   * Update basic article fields (no author changes here).
-   */
   update: async (
     id: string,
     data: Partial<{
@@ -201,7 +314,7 @@ export const articleDAL = {
       keywords: string | null;
       coverImage: string | null;
       slug: string;
-    }>
+    }>,
   ) => {
     const nextData = { ...data };
     if (data.title && data.title.trim().length > 0) {
@@ -221,19 +334,13 @@ export const articleDAL = {
     });
   },
 
-  /**
-   * Update article status (e.g. to REJECTED for withdrawal).
-   */
-  updateStatus: async (id: string, status: ArticleStatus) => {
+  updateStatus: async (id: string, status: article_status) => {
     return prisma.article.update({
       where: { id },
       data: { status },
     });
   },
 
-  /**
-   * Assign an editor to an article.
-   */
   assignEditor: async (id: string, editorId: string) => {
     return prisma.article.update({
       where: { id },
@@ -241,26 +348,20 @@ export const articleDAL = {
     });
   },
 
-  /**
-   * List articles pending editor assignment / review.
-   */
   listPendingAssignment: async (opts?: { take?: number; skip?: number }) => {
     const take = Math.min(100, Math.max(1, opts?.take ?? 20));
     const skip = Math.max(0, opts?.skip ?? 0);
 
-    return prisma.article.findMany({
+    const articles = await prisma.article.findMany({
       where: { status: "SUBMITTED" },
       include: {
-        authors: {
-          include: {
-            author: { select: { id: true, name: true, email: true } },
-          },
-          orderBy: { authorOrder: "asc" },
-        },
+        ...authorInclude,
       },
       orderBy: { createdAt: "asc" },
       take,
       skip,
     });
+
+    return articles.map(mapArticle);
   },
 };

@@ -59,14 +59,10 @@ export default async function PublishedArticlesPage({ searchParams }: PageProps)
     prisma.article.count({ where }),
     prisma.article.findMany({
       where,
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        abstract: true,
-        authors: {
+      include: {
+        articleauthor: {
           include: {
-            author: {
+            user: {
               select: { id: true, name: true, email: true },
             },
           },
@@ -141,7 +137,9 @@ export default async function PublishedArticlesPage({ searchParams }: PageProps)
                     {article.abstract}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {article.authors.map((a) => a.author.name ?? a.author.email).join(", ")}
+                    {article.articleauthor
+                      .map((a) => a.user.name ?? a.user.email)
+                      .join(", ")}
                   </p>
                   {article.issue ? (
                     <p className="text-xs text-muted-foreground">
@@ -153,7 +151,7 @@ export default async function PublishedArticlesPage({ searchParams }: PageProps)
                     <p className="text-xs text-muted-foreground">Issue not assigned</p>
                   )}
                   <Button asChild size="sm">
-                    <Link href={`/article/${article.slug}`}>Read Article</Link>
+                    <Link href={`/article/${article.slug ?? article.id}`}>Read Article</Link>
                   </Button>
                 </CardContent>
               </Card>

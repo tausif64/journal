@@ -8,6 +8,16 @@ import WhyPublish from "@/components/why-publish";
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 
+// Get base URL with fallback for build time
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    // browser
+    return window.location.origin;
+  }
+  // server
+  return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+};
+
 export const metadata: Metadata = {
   title: "MACROJ Research Journal - Multidisciplinary Academic Research",
   description:
@@ -26,16 +36,21 @@ export const metadata: Metadata = {
     "interdisciplinary research",
     "Tausif Ansari",
   ],
-  authors: [{ name: "Marwari College Ranchi" }],
+  authors: [
+    { name: "Marwari College Ranchi" },
+    { name: "Tausif Ansari", url: "https://tausifansari.com/" },
+    { name: "Tausif Ansari (GitHub)", url: "https://github.com/tausif64" },
+    { name: "Tausif Ansari (LinkedIn)", url: "https://linkedin.com/in/tausifansari64" },
+  ],
   openGraph: {
     title: "MACROJ Research Journal - Multidisciplinary Academic Research",
     description:
       "Discover the MACROJ Research Journal: peer-reviewed articles, interdisciplinary insights, and open-access scholarly research from Marwari College Ranchi.",
-    url: "https://yourdomain.com/",
+    url: `${getBaseUrl()}/`,
     siteName: "MACROJ Research Journal",
     images: [
       {
-        url: "https://placehold.co/1200x400/FF5733/FFFFFF.png",
+        url: `${getBaseUrl()}/og.jpg`,
         width: 1200,
         height: 400,
         alt: "MACROJ Research Journal Banner",
@@ -49,7 +64,8 @@ export const metadata: Metadata = {
     title: "MACROJ Research Journal - Multidisciplinary Academic Research",
     description:
       "Explore MACROJ: a peer-reviewed, open-access journal featuring research across sciences, humanities, education, and technology.",
-    images: ["https://placehold.co/1200x400/FF5733/FFFFFF.png"],
+    images: [`${getBaseUrl()}/og.jpg`],
+    creator: "@tausif_ansari64",
   },
 };
 

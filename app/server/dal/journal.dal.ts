@@ -9,7 +9,7 @@ export const journalDAL = {
   findById: async (id: string) => {
     return prisma.journal.findUnique({
       where: { id },
-      include: { volumes: true },
+      include: { volume: true },
     });
   },
 

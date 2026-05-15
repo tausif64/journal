@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiError, apiPut } from "@/lib/api";
-import { ArticleStatus } from "@/lib/generated/prisma/client";
+import { ArticleStatus } from "@/types/dto";
 
 export function useChangeArticleStatus(articleId: string) {
   const qc = useQueryClient();

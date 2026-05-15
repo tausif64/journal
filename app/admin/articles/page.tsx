@@ -96,7 +96,7 @@ export default function AdminArticlesPage() {
             <span className="text-xs text-muted-foreground">Rows</span>
             <Select
               value={String(table.getState().pagination.pageSize)}
-              onValueChange={(value) => table.setPageSize(Number(value))}
+              onValueChange={(value: string) => table.setPageSize(Number(value))}
             >
               <SelectTrigger className="h-9 w-[84px]">
                 <SelectValue />

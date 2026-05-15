@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { randomUUID } from "node:crypto";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -71,6 +72,7 @@ export async function POST(req: Request) {
 
   const created = await prisma.testimonial.create({
     data: {
+      id: randomUUID(),
       quote,
       designation: designation || null,
       imageUrl: imageUrl || null,
