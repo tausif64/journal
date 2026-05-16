@@ -86,7 +86,7 @@ export function RoleForgotPasswordForm({
           ? ""
           : `${window.location.origin}${basePath}/forgot-password`;
 
-      const response = await authClient.forgetPassword({
+      const response = await authClient.requestPasswordReset({
         email: values.email,
         redirectTo: resetLink,
       });

@@ -59,7 +59,6 @@ export default function SignUp() {
         email: values.email,
         password: values.password,
         phone: values.phone,
-        // callbackURL: "http://localhost:3000",
         fetchOptions: {
           onSuccess: () => {
             toast.success("Signed in successful");

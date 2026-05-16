@@ -15,7 +15,7 @@ const getBaseUrl = () => {
     return window.location.origin;
   }
   // server
-  return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  return process.env.NEXT_PUBLIC_APP_URL || 'https://macroj.tausifansari.com/';
 };
 
 export const metadata: Metadata = {
