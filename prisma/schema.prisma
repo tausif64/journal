@@ -1,11 +1,11 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
 }
 
 model User {
@@ -74,7 +74,7 @@ model Verification {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 
-  @@index([identifier(length: 191)])
+  @@index([identifier])
   @@map("verification")
 }
 
@@ -102,14 +102,14 @@ model article {
   updatedAt     DateTime        @updatedAt
   issueOrder    Int?
   slug          String?         @unique(map: "Article_slug_key")
-  user          User?           @relation(fields: [editorId], references: [id], map: "Article_editorId_fkey")
-  issue         issue?          @relation(fields: [issueId], references: [id], map: "Article_issueId_fkey")
+  user          User?           @relation(fields: [editorId], references: [id], map: "Article_editorId_fkey_fk")
+  issue         issue?          @relation(fields: [issueId], references: [id], map: "Article_issueId_fkey_fk")
   articleauthor articleauthor[]
   payment       payment?
   review        review[]
 
-  @@index([editorId], map: "Article_editorId_fkey")
-  @@index([issueId], map: "Article_issueId_fkey")
+  @@index([editorId], map: "Article_editorId_idx")
+  @@index([issueId], map: "Article_issueId_idx")
 }
 
 model articleauthor {
@@ -134,7 +134,7 @@ model carouselslide {
   image       String
   title       String
   description String
-  buttons     String               @db.LongText
+  buttons     String               @db.Text
   status      carouselslide_status @default(DRAFT)
   sortOrder   Int                  @default(0)
   createdAt   DateTime             @default(now())
@@ -175,8 +175,8 @@ model review {
   comments       String
   recommendation String
   createdAt      DateTime @default(now())
-  article        article  @relation(fields: [articleId], references: [id], map: "Review_articleId_fkey")
-  user           User     @relation(fields: [reviewerId], references: [id], map: "Review_reviewerId_fkey")
+  article        article  @relation(fields: [articleId], references: [id], map: "Review_articleId_fkey_fk")
+  user           User     @relation(fields: [reviewerId], references: [id], map: "Review_reviewerId_fkey_fk")
 
   @@index([articleId], map: "Review_articleId_fkey")
   @@index([reviewerId], map: "Review_reviewerId_fkey")
@@ -192,7 +192,7 @@ model testimonial {
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
   userId      String
-  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Testimonial_userId_fkey")
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Testimonial_userId_fkey_fk")
 
   @@index([status, createdAt], map: "Testimonial_status_createdAt_idx")
   @@index([userId], map: "Testimonial_userId_fkey")
