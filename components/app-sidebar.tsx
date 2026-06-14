@@ -7,7 +7,7 @@ import {
   IconFileText,
   IconInnerShadowTop,
   IconMessage,
-  IconSettings,
+  // IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
 
@@ -55,11 +55,11 @@ export const data = {
       url: "/admin/testimonials",
       icon: IconMessage,
     },
-    {
-      title: "Settings",
-      url: "/admin/settings",
-      icon: IconSettings,
-    },
+    // {
+    //   title: "Settings",
+    //   url: "/admin/settings",
+    //   icon: IconSettings,
+    // },
   ],
 };
 

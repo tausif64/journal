@@ -50,6 +50,15 @@ function normalizeButtons(value: unknown): CarouselButton[] | null {
 
   const buttons: CarouselButton[] = [];
   for (const button of value) {
+    // Backward-compatibility for legacy rows where buttons were stored
+    // as a string array, e.g. ["Learn More", "Submit Now"].
+    if (typeof button === "string") {
+      const label = button.trim();
+      if (!label) return null;
+      buttons.push({ label, link: "#" });
+      continue;
+    }
+
     if (
       !button ||
       typeof button !== "object" ||
@@ -183,7 +192,7 @@ export async function readCarouselSlides(options?: {
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
   });
 
-  return slides.map(mapDbSlide).filter((slide) => slide.buttons.length > 0);
+  return slides.map(mapDbSlide);
 }
 
 export async function writeCarouselSlides(slides: CarouselSlide[]) {

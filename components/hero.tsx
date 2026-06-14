@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -17,22 +17,22 @@ import type { CarouselSlide } from "@/lib/carousel-settings";
 export default function Hero() {
   const fallbackSlides: CarouselSlide[] = [
     {
-      image: "https://placehold.co/1200x400/FF5733/FFFFFF",
-      title: "Explore Latest Research Articles",
+      image: "/carousel/carousel-1772711165467-g2xzonys0oc.jpg",
+      title: "Join Our Editorial Board",
       description:
-        "Stay up-to-date with cutting-edge studies and scholarly publications.",
+        "We are seeking experts in various fields to join our editorial team.",
       buttons: [
-        { label: "View Articles", link: "#" },
-        { label: "Submit Your Paper", link: "#" },
+        { label: "Apply Now", link: "/dashboard/submit" },
+        { label: "Submit Your Paper", link: "/dashboard/submit" },
       ],
       status: "SHOW",
       sortOrder: 0,
     },
     {
-      image: "https://placehold.co/1200x400/33FF57/FFFFFF",
-      title: "Join Our Research Community",
-      description: "Collaborate with top researchers from around the globe.",
-      buttons: [{ label: "Sign Up", link: "#" }],
+      image: "/carousel/carousel-1772711186601-tte8uvh7eyq.jpg",
+      title: "Call for Papers: Special Issue",
+      description: "Submit your research on emerging technologies for our upcoming special issue.",
+      buttons: [{ label: "Sign Up", link: "/login" }, { label: "Submit Your Paper", link: "/dashboard/submit" },],
       status: "SHOW",
       sortOrder: 1,
     },
@@ -48,31 +48,31 @@ export default function Hero() {
   ];
   const [heroSlides, setHeroSlides] = useState<CarouselSlide[]>(fallbackSlides);
 
-  useEffect(() => {
-    const controller = new AbortController();
+  // useEffect(() => {
+  //   const controller = new AbortController();
 
-    const loadSlides = async () => {
-      try {
-        const res = await fetch("/api/public/carousel", {
-          signal: controller.signal,
-          cache: "no-store",
-        });
-        if (!res.ok) return;
-        const json = (await res.json()) as {
-          success?: boolean;
-          data?: CarouselSlide[];
-        };
-        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-          setHeroSlides(json.data);
-        }
-      } catch {
-        // keep fallback slides on fetch errors
-      }
-    };
+  //   const loadSlides = async () => {
+  //     try {
+  //       const res = await fetch("/api/public/carousel", {
+  //         signal: controller.signal,
+  //         cache: "no-store",
+  //       });
+  //       if (!res.ok) return;
+  //       const json = (await res.json()) as {
+  //         success?: boolean;
+  //         data?: CarouselSlide[];
+  //       };
+  //       if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+  //         setHeroSlides(json.data);
+  //       }
+  //     } catch {
+  //       // keep fallback slides on fetch errors
+  //     }
+  //   };
 
-    void loadSlides();
-    return () => controller.abort();
-  }, []);
+  //   void loadSlides();
+  //   return () => controller.abort();
+  // }, []);
 
   // const slides = heroSlides;
 

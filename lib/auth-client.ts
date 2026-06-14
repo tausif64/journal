@@ -3,6 +3,6 @@ import { inferAdditionalFields } from "better-auth/client/plugins";
 import { auth } from "./auth";
 
 export const authClient = createAuthClient({
-  baseURL: "https://macroj.tausifansari.com/",
+  baseURL: "http://localhost:3000",
   plugins: [inferAdditionalFields<typeof auth>()],
 });
