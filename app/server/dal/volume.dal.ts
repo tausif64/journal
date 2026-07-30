@@ -20,7 +20,7 @@ export const volumeDAL = {
   findById: async (id: string) => {
     return prisma.volume.findUnique({
       where: { id },
-      include: { journal: true, issue: true },
+      include: { journal: true, issues: true },
     });
   },
 
@@ -32,7 +32,7 @@ export const volumeDAL = {
     const skip = Math.max(0, opts?.skip ?? 0);
     return prisma.volume.findMany({
       where: { journalId },
-      include: { issue: true },
+      include: { issues: true },
       orderBy: { volumeNumber: "desc" },
       take,
       skip,

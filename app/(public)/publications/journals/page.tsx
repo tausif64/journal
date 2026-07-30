@@ -29,9 +29,9 @@ export default async function JournalsPage() {
 
   const journals = await prisma.journal.findMany({
     where: {
-      volume: {
+      volumes: {
         some: {
-          issue: {
+          issues: {
             some: {
               status: "PUBLISHED",
             },
@@ -40,10 +40,10 @@ export default async function JournalsPage() {
       },
     },
     include: {
-      volume: {
+      volumes: {
         orderBy: [{ year: "desc" }, { volumeNumber: "desc" }],
         include: {
-          issue: {
+          issues: {
             where: { status: "PUBLISHED" },
             orderBy: [{ publicationDate: "desc" }, { createdAt: "desc" }],
           },
@@ -54,11 +54,11 @@ export default async function JournalsPage() {
 
   const recentJournals = journals
     .map((journal) => {
-      const publishedVolumes = journal.volume.filter(
-        (volume) => volume.issue.length > 0
+      const publishedVolumes = journal.volumes.filter(
+        (volume) => volume.issues.length > 0
       );
       const latestVolume = publishedVolumes[0] ?? null;
-      const latestIssue = latestVolume?.issue[0] ?? null;
+      const latestIssue = latestVolume?.issues[0] ?? null;
 
       return {
         ...journal,

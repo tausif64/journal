@@ -28,7 +28,7 @@ export async function GET(_req: Request, { params }: Params) {
   const article = await prisma.article.findUnique({
     where: { id },
     include: {
-      articleauthor: {
+      authors: {
         include: {
           user: { select: { id: true, name: true, email: true } },
         },
@@ -41,7 +41,7 @@ export async function GET(_req: Request, { params }: Params) {
           },
         },
       },
-      review: {
+      reviews: {
         include: {
           user: {
             select: { id: true, name: true, email: true },
@@ -59,20 +59,20 @@ export async function GET(_req: Request, { params }: Params) {
     );
   }
 
-  const { articleauthor, review, ...rest } = article;
+  const { authors, reviews, ...rest } = article;
 
   return NextResponse.json({
     success: true,
     data: {
       ...rest,
-      authors: articleauthor.map((author) => ({
+      authors: authors.map((author) => ({
         id: author.id,
         authorId: author.authorId,
         authorOrder: author.authorOrder,
         isCorresponding: author.isCorresponding,
         author: author.user,
       })),
-      reviews: review.map((item) => ({
+      reviews: reviews.map((item) => ({
         ...item,
         reviewer: item.user,
       })),

@@ -38,7 +38,7 @@ export const paymentDAL = {
     return prisma.payment.findMany({
       where: {
         article: {
-          articleauthor: {
+          authors: {
             some: { authorId },
           },
         },

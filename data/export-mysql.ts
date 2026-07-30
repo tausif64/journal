@@ -31,11 +31,11 @@ async function main() {
     prisma.volume.findMany(),
     prisma.issue.findMany(),
     prisma.article.findMany(),
-    prisma.articleauthor.findMany(),
+    prisma.articleAuthor.findMany(),
     prisma.payment.findMany(),
     prisma.review.findMany(),
     prisma.testimonial.findMany(),
-    prisma.carouselslide.findMany(),
+    prisma.carouselSlide.findMany(),
   ]);
 
   const seedData = {

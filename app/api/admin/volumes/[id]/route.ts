@@ -21,7 +21,7 @@ export async function GET(
           issn: true,
         },
       },
-      issue: {
+      issues: {
         orderBy: { issueNumber: "desc" },
       },
     },
@@ -38,7 +38,7 @@ export async function GET(
     success: true,
     data: {
       ...volume,
-      issues: volume.issue,
+      issues: volume.issues,
     },
   });
 }
@@ -85,7 +85,7 @@ export async function PUT(
           select: { id: true, name: true, issn: true },
         },
         _count: {
-          select: { issue: true },
+          select: { issues: true },
         },
       },
     });
@@ -95,7 +95,7 @@ export async function PUT(
       data: {
         ...updated,
         _count: {
-          issues: updated._count.issue,
+          issues: updated._count.issues,
         },
       },
     });

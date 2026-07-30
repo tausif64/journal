@@ -138,10 +138,10 @@ export function validateCarouselSlides(slides: unknown): {
 }
 
 async function ensureDefaultSlidesIfEmpty() {
-  const count = await prisma.carouselslide.count();
+  const count = await prisma.carouselSlide.count();
   if (count > 0) return;
 
-  await prisma.carouselslide.createMany({
+  await prisma.carouselSlide.createMany({
     data: defaultCarouselSlides.map((slide, index) => ({
       id: randomUUID(),
       image: slide.image,
@@ -187,7 +187,7 @@ export async function readCarouselSlides(options?: {
 }): Promise<CarouselSlide[]> {
   await ensureDefaultSlidesIfEmpty();
 
-  const slides = await prisma.carouselslide.findMany({
+  const slides = await prisma.carouselSlide.findMany({
     where: options?.onlyVisible ? { status: "SHOW" } : undefined,
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
   });
@@ -197,8 +197,8 @@ export async function readCarouselSlides(options?: {
 
 export async function writeCarouselSlides(slides: CarouselSlide[]) {
   await prisma.$transaction(async (tx) => {
-    await tx.carouselslide.deleteMany({});
-    await tx.carouselslide.createMany({
+    await tx.carouselSlide.deleteMany({});
+    await tx.carouselSlide.createMany({
       data: slides.map((slide, index) => ({
         id: slide.id ?? randomUUID(),
         image: slide.image,

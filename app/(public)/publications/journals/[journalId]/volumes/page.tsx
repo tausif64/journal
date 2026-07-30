@@ -30,7 +30,7 @@ export default async function VolumesPage({
   const volumes = await prisma.volume.findMany({
     where: {
       journalId,
-      issue: {
+      issues: {
         some: {
           status: "PUBLISHED",
         },
@@ -38,7 +38,7 @@ export default async function VolumesPage({
     },
     include: {
       journal: true,
-      issue: {
+      issues: {
         where: {
           status: "PUBLISHED",
         },
@@ -80,13 +80,13 @@ export default async function VolumesPage({
                    <strong>Journal:</strong> {volume.journal.name}
                  </p>
                  <p className="text-sm text-slate-600">
-                   <strong>Published Issues:</strong> {volume.issue.length}
-                 </p>
-                 <p className="text-xs text-muted-foreground">
-                   Latest issue:{" "}
-                   {volume.issue[0]?.publicationDate
-                     ? new Date(volume.issue[0].publicationDate).toLocaleDateString("en-IN")
-                     : "Date not available"}
+                    <strong>Published Issues:</strong> {volume.issues.length}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Latest issue:{" "}
+                    {volume.issues[0]?.publicationDate
+                      ? new Date(volume.issues[0].publicationDate).toLocaleDateString("en-IN")
+                      : "Date not available"}
                  </p>
                </CardContent>
                 </Card>

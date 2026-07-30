@@ -14,7 +14,7 @@ export async function GET(
   const article = await prisma.article.findUnique({
     where: { id: id },
     include: {
-      articleauthor: {
+      authors: {
         orderBy: { authorOrder: "asc" },
         include: {
           user: {
@@ -22,10 +22,10 @@ export async function GET(
           },
         },
       },
-      user: {
+      editor: {
         select: { id: true, name: true, email: true },
       },
-      review: {
+      reviews: {
         include: {
           user: {
             select: { id: true, name: true },
@@ -48,19 +48,19 @@ export async function GET(
     return NextResponse.json({ error: "Article not found" }, { status: 404 });
   }
 
-  const { articleauthor, user, review, ...rest } = article;
+  const { authors, editor, reviews, ...rest } = article;
 
   return NextResponse.json({
     ...rest,
-    authors: articleauthor.map((author) => ({
+    authors: authors.map((author) => ({
       id: author.id,
       authorId: author.authorId,
       authorOrder: author.authorOrder,
       isCorresponding: author.isCorresponding,
       author: author.user,
     })),
-    editor: user ?? null,
-    reviews: review.map((item) => ({
+    editor: editor ?? null,
+    reviews: reviews.map((item) => ({
       ...item,
       reviewer: item.user,
     })),

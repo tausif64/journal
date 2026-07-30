@@ -46,31 +46,31 @@ type ArticleEditorRelation =
   | undefined;
 
 type MappableArticle = {
-  articleauthor?: ArticleAuthorRelation[];
+  authors?: ArticleAuthorRelation[];
   review?: ArticleReviewRelation[];
-  user?: ArticleEditorRelation;
+  editor?: ArticleEditorRelation;
   issue?: unknown;
   payment?: unknown;
 } & Record<string, unknown>;
 
 function mapArticle<T extends MappableArticle>(article: T) {
   const {
-    articleauthor = [],
+    authors = [],
     review = [],
-    user,
+    editor,
     ...rest
   } = article;
 
   return {
     ...rest,
-    authors: articleauthor.map((author) => ({
+    authors: authors.map((author) => ({
       id: author.id,
       authorId: author.authorId,
       authorOrder: author.authorOrder,
       isCorresponding: author.isCorresponding,
       author: author.user,
     })),
-    editor: user ?? null,
+    editor: editor ?? null,
     reviews: review.map((item) => ({
       ...item,
       reviewer: item.user ?? null,
@@ -79,7 +79,7 @@ function mapArticle<T extends MappableArticle>(article: T) {
 }
 
 const authorInclude = {
-  articleauthor: {
+  authors: {
     include: {
       user: {
         select: {
@@ -116,7 +116,7 @@ export const articleDAL = {
         fileUrl: data.fileUrl,
         keywords: data.keywords ?? null,
         coverImage: data.coverImage ?? null,
-        articleauthor: {
+        authors: {
           create: data.authors.map((author) => ({
             id: randomUUID(),
             authorId: author.authorId,
@@ -143,14 +143,14 @@ export const articleDAL = {
       where: { id },
       include: {
         ...authorInclude,
-        user: {
+        editor: {
           select: {
             id: true,
             name: true,
             email: true,
           },
         },
-        review: {
+        reviews: {
           include: {
             user: {
               select: {
@@ -194,14 +194,14 @@ export const articleDAL = {
       where: { slug },
       include: {
         ...authorInclude,
-        user: {
+        editor: {
           select: {
             id: true,
             name: true,
             email: true,
           },
         },
-        review: {
+        reviews: {
           include: {
             user: {
               select: {
@@ -258,13 +258,13 @@ export const articleDAL = {
 
     const articles = await prisma.article.findMany({
       where: {
-        articleauthor: {
+        authors: {
           some: { authorId: userId },
         },
       },
       include: {
         ...authorInclude,
-        user: { select: { id: true, name: true, email: true } },
+        editor: { select: { id: true, name: true, email: true } },
         issue: true,
         payment: true,
       },
@@ -285,7 +285,7 @@ export const articleDAL = {
 
     const articles = await prisma.article.findMany({
       where: {
-        articleauthor: {
+        authors: {
           some: {
             user: { email },
           },
@@ -293,7 +293,7 @@ export const articleDAL = {
       },
       include: {
         ...authorInclude,
-        user: { select: { id: true, name: true, email: true } },
+        editor: { select: { id: true, name: true, email: true } },
         issue: true,
         payment: true,
       },

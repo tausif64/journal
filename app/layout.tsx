@@ -23,7 +23,6 @@ const getBaseUrl = () => {
 export const metadata: Metadata = {
   title: "MACROJ",
   description: "Publish your article with us.",
-  viewport: 'width=device-width, initial-scale=1',
   authors: [
     {
       name: "Tausif Ansari",
@@ -59,6 +58,11 @@ export const metadata: Metadata = {
     images: [`${getBaseUrl()}/og.jpg`],
     creator: "@tausif_ansari64",
   },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

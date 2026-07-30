@@ -19,7 +19,7 @@ export async function GET() {
         },
         _count: {
           select: {
-            issue: true,
+            issues: true,
           },
         },
       },
@@ -31,7 +31,7 @@ export async function GET() {
       data: volumes.map((volume) => ({
         ...volume,
         _count: {
-          issues: volume._count.issue,
+          issues: volume._count.issues,
         },
       })),
     });

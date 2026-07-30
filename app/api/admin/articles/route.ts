@@ -9,7 +9,7 @@ export async function GET() {
   const articles = await prisma.article.findMany({
     orderBy: { createdAt: "desc" },
     include: {
-      user: {
+      editor: {
         select: { id: true, name: true },
       },
       issue: {
@@ -23,12 +23,12 @@ export async function GET() {
   });
 
   return NextResponse.json(
-    articles.map(({ user, issue, ...article }) => ({
+    articles.map(({ editor, issue, ...article }) => ({
       ...article,
-      editor: user
+      editor: editor
         ? {
-            id: user.id,
-            name: user.name,
+            id: editor.id,
+            name: editor.name,
           }
         : null,
       issue: issue

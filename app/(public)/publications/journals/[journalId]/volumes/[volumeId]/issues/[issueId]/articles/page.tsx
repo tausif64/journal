@@ -44,20 +44,20 @@ export default async function ArticlesPage({
       issueId,
       status: "PUBLISHED",
     },
-    include: {
-      articleauthor: {
-        include: {
-          user: {
-            select: {
-              name: true,
-              email: true,
+      include: {
+        authors: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                email: true,
+              },
             },
           },
+          orderBy: {
+            authorOrder: "asc",
+          },
         },
-        orderBy: {
-          authorOrder: "asc",
-        },
-      },
       issue: {
         include: {
           volume: {
@@ -98,8 +98,8 @@ export default async function ArticlesPage({
 
                     <p className="min-h-10 text-sm text-slate-600">
                       <strong>Authors:</strong>{" "}
-                      {article.articleauthor.length > 0
-                        ? article.articleauthor
+                      {article.authors.length > 0
+                        ? article.authors
                             .map(
                               (author) => author.user.name ?? author.user.email,
                             )

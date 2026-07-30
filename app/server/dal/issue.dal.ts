@@ -21,7 +21,7 @@ export const issueDAL = {
   findById: async (id: string) => {
     return prisma.issue.findUnique({
       where: { id },
-      include: { article: true, volume: true },
+      include: { articles: true, volume: true },
     });
   },
 
@@ -33,7 +33,7 @@ export const issueDAL = {
     const skip = Math.max(0, opts?.skip ?? 0);
     return prisma.issue.findMany({
       where: { volumeId },
-      include: { article: true },
+      include: { articles: true },
       orderBy: { issueNumber: "asc" },
       take,
       skip,

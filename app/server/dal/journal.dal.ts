@@ -1,15 +1,21 @@
 // server/dal/journal.dal.ts
+import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 export const journalDAL = {
   create: async (data: { name: string; issn: string; status?: "ACTIVE" | "INACTIVE" }) => {
-    return prisma.journal.create({ data });
+    return prisma.journal.create({
+      data: {
+        id: randomUUID(),
+        ...data,
+      },
+    });
   },
 
   findById: async (id: string) => {
     return prisma.journal.findUnique({
       where: { id },
-      include: { volume: true },
+      include: { volumes: true },
     });
   },
 

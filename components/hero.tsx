@@ -17,7 +17,7 @@ import type { CarouselSlide } from "@/lib/carousel-settings";
 export default function Hero() {
   const fallbackSlides: CarouselSlide[] = [
     {
-      image: "/carousel/carousel-1772711165467-g2xzonys0oc.jpg",
+      image: "/uploads/carousel/carousel-1772711165467-g2xzonys0oc.jpg",
       title: "Join Our Editorial Board",
       description:
         "We are seeking experts in various fields to join our editorial team.",
@@ -29,7 +29,7 @@ export default function Hero() {
       sortOrder: 0,
     },
     {
-      image: "/carousel/carousel-1772711186601-tte8uvh7eyq.jpg",
+      image: "/uploads/carousel/carousel-1772711186601-tte8uvh7eyq.jpg",
       title: "Call for Papers: Special Issue",
       description: "Submit your research on emerging technologies for our upcoming special issue.",
       buttons: [{ label: "Sign Up", link: "/login" }, { label: "Submit Your Paper", link: "/dashboard/submit" },],
@@ -37,7 +37,7 @@ export default function Hero() {
       sortOrder: 1,
     },
     {
-      image: "https://placehold.co/1200x400/5733FF/FFFFFF",
+      image: "/uploads/carousel/carousel-1772711165467.png",
       title: "Discover Open Access Journals",
       description:
         "Access high-quality publications without any subscription barriers.",
@@ -46,7 +46,7 @@ export default function Hero() {
       sortOrder: 2,
     },
   ];
-  const [heroSlides, setHeroSlides] = useState<CarouselSlide[]>(fallbackSlides);
+  const [heroSlides] = useState<CarouselSlide[]>(fallbackSlides);
 
   // useEffect(() => {
   //   const controller = new AbortController();

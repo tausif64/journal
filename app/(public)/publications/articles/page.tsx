@@ -60,7 +60,7 @@ export default async function PublishedArticlesPage({ searchParams }: PageProps)
     prisma.article.findMany({
       where,
       include: {
-        articleauthor: {
+        authors: {
           include: {
             user: {
               select: { id: true, name: true, email: true },
@@ -137,7 +137,7 @@ export default async function PublishedArticlesPage({ searchParams }: PageProps)
                     {article.abstract}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {article.articleauthor
+                    {article.authors
                       .map((a) => a.user.name ?? a.user.email)
                       .join(", ")}
                   </p>

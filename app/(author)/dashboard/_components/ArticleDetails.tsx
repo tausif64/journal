@@ -2,7 +2,7 @@
 import { useArticleById } from '@/hooks/use-user';
 import AutherArticleCard from './AuthorArticleCard';
 import { Card, CardContent } from '@/components/ui/card';
-import PaymentClient from './PaymentClient';
+// import PaymentClient from './PaymentClient';
 import ArticleDetailSkeleton from '@/components/article-detail-skeleton';
 import { Button } from '@/components/ui/button';
 import { useRouter } from "next/navigation";
