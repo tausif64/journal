@@ -1,0 +1,53 @@
+<svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="220" height="220" rx="36" fill="#FAFAF9"/>
+
+  <!-- Outer document -->
+  <path
+    d="M50 40H118C140 40 158 58 158 80V150H90C68 150 50 132 50 110V40Z"
+    fill="#111111"/>
+
+  <!-- Inner paper with thicker gold outline -->
+  <path
+    d="M82 60H128C142 60 152 70 152 84V140H106C92 140 82 130 82 116V60Z"
+    fill="#FFFFFF"
+    stroke="#C9A227"
+    stroke-width="8"
+    stroke-linejoin="round"/>
+
+  <!-- Brand typography -->
+  <text
+    x="117"
+    y="101"
+    text-anchor="middle"
+    font-family="'Times New Roman', serif"
+    font-size="10"
+    font-style="italic"
+    font-weight="700"
+    letter-spacing="2.5"
+    fill="#18181B">
+    MACROJ
+  </text>
+
+  <!-- Editorial detail -->
+  <circle cx="96" cy="118" r="2.5" fill="#18181B"/>
+
+  <line
+    x1="103"
+    y1="118"
+    x2="129"
+    y2="118"
+    stroke="#18181B"
+    stroke-width="3"
+    stroke-linecap="round"/>
+
+  <line
+    x1="96"
+    y1="129"
+    x2="122"
+    y2="129"
+    stroke="#18181B"
+    stroke-width="2.5"
+    opacity="0.45"
+    stroke-linecap="round"/>
+</svg>
